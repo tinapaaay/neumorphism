@@ -1,234 +1,601 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Neumorphic Pomodoro Timer</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Neumorphic Pomodoro Timer</title>
 
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Google Fonts: Short Stack for the hand-drawn note, Inter for clean numbers -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Short+Stack&display=swap" rel="stylesheet">
+    <!-- Google Fonts: Short Stack for the hand-drawn note, Inter for clean numbers -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Short+Stack&display=swap"
+      rel="stylesheet"
+    />
 
-  <!-- Tone.js for tactile acoustic pops and gentle bell alerts -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
+    <!-- Tone.js for tactile acoustic pops and gentle bell alerts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
 
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-
-  <div class="pomodoro-layout">
-    <div class="sidebar-shell" id="sidebarShell">
-      <button type="button" class="sidebar-toggle" id="sidebarToggle" aria-label="Show goals and calendar" aria-controls="sidebarPanel" aria-expanded="false">
-        <span></span><span></span><span></span>
-      </button>
-    <aside class="sidebar-panel" id="sidebarPanel" aria-label="Goals and calendar" aria-hidden="true" inert>
-
-      <button type="button" id="resetLayoutButton" class="pill-btn reset-layout-button">Reset layout</button>
-      <p id="layoutResetStatus" class="sr-only" role="status"></p>
-      <!-- Quote Block -->
-      <div class="quote-box">
-        <div class="quote-bar"></div>
-        <div class="quote-text">
-          Where attention goes,<br>energy flows.
-        </div>
-      </div>
-
-      <section class="sidebar-widget movable-widget profile-card" id="profileWidget" data-widget-name="Profile" aria-label="Your profile">
-        <div class="widget-header profile-drag-bar">
-          <button type="button" class="widget-title widget-drag-handle" aria-label="Move Profile card" aria-describedby="widgetMoveHint" title="Drag profile card"><span class="widget-grip" aria-hidden="true">⠿</span></button>
-          <button type="button" class="widget-return" aria-label="Return Profile to sidebar" title="Return to sidebar">↶</button>
-        </div>
-        <button type="button" class="avatar-wrapper avatar-upload-button" id="avatarUploadButton" aria-label="Add or change profile photo" title="Click to add a picture">
-          <svg class="avatar-svg" id="profilePlaceholder" viewBox="0 0 100 100" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
-            <rect width="100" height="100" rx="20" fill="#e4edf3"/>
-            <circle cx="19" cy="20" r="8" fill="#5882A0"/>
-            <path d="M2 65C13 47 23 46 35 57C45 66 51 60 58 43C66 23 76 27 89 54C93 62 98 58 98 66V86Q98 96 86 97Q50 102 15 96Q2 94 2 65Z" fill="#5882A0"/>
-          </svg>
-          <img id="profilePhoto" class="profile-photo" alt="Profile photo" hidden>
-          <span class="avatar-upload-overlay" aria-hidden="true">Change photo</span>
-        </button>
-        <div class="profile-info">
-          <h2 class="user-name" id="profileName">Christine Joy Espiritu</h2>
-          <p class="user-role" id="profileRole">Computer Science Student</p>
-          <span class="user-joined" id="profileJoined">joined since 2026</span>
-          <button class="btn-edit-profile" type="button" id="editProfileButton">Edit Profile</button>
-          <span class="user-focus" id="profileFocus">Total Focused: 0 min</span>
-          <span id="avatarUploadStatus" class="avatar-upload-status" role="status" hidden></span>
-        </div>
-      </section>
-
-      <!-- Goal for today Widget -->
-      <div class="sidebar-widget movable-widget" id="goalWidget" data-widget-name="Goal">
-        <div class="widget-header">
-          <button type="button" class="widget-title widget-drag-handle" aria-label="Move Goal card" aria-describedby="widgetMoveHint" title="Drag to place on screen">Goal for today:<span class="widget-grip" aria-hidden="true">⠿</span></button>
-          <button type="button" class="widget-return" aria-label="Return Goal to sidebar" title="Return to sidebar">↶</button>
-        </div>
-        <div class="goal-beads-row" id="goalBeadsContainer" role="group" aria-label="Daily focus sessions"></div>
-      </div>
-
-      <section class="sidebar-widget movable-widget weekly-stats" id="weeklyStatsWidget" data-widget-name="Weekly stats" aria-label="Weekly focus statistics">
-        <div class="widget-header">
-          <button type="button" class="widget-title widget-drag-handle" aria-label="Move Weekly stats card" aria-describedby="widgetMoveHint" title="Drag to place on screen">Weekly stats<span class="widget-grip" aria-hidden="true">⠿</span></button>
-          <button type="button" class="widget-return" aria-label="Return Weekly stats to sidebar" title="Return to sidebar">↶</button>
-        </div>
-        <p id="weeklyStatsRange" class="weekly-stats-range"></p>
-        <dl class="weekly-stats-grid">
-          <div><dt>Focus time</dt><dd id="weeklyFocusTime">0h 0m</dd></div>
-          <div><dt>Sessions</dt><dd id="weeklySessions">0</dd></div>
-          <div><dt>Daily streak</dt><dd id="weeklyStreak">0 days</dd></div>
-        </dl>
-      </section>
-
-      <section class="sidebar-widget movable-widget ambient-card" id="ambientWidget" data-widget-name="Ambient sounds" aria-label="Ambient sounds">
-        <div class="widget-header">
-          <button type="button" class="widget-title widget-drag-handle" aria-label="Move Ambient sounds card" aria-describedby="widgetMoveHint" title="Drag to place on screen">Ambient sounds<span class="widget-grip" aria-hidden="true">⠿</span></button>
-          <button type="button" class="widget-return" aria-label="Return Ambient sounds to sidebar" title="Return to sidebar">↶</button>
-        </div>
-        <label for="ambientSoundSelect" class="ambient-label">Soundscape</label>
-        <div class="ambient-play-row">
-          <select id="ambientSoundSelect"><option value="rain">Rain</option><option value="cafe">Café</option><option value="white">White noise</option></select>
-          <button type="button" id="ambientPlayButton" class="pill-btn" aria-pressed="false">Play</button>
-        </div>
-        <label for="ambientVolume" class="ambient-label ambient-volume-label">Volume <output id="ambientVolumeValue" for="ambientVolume">35%</output></label>
-        <input id="ambientVolume" type="range" min="0" max="100" value="35" aria-label="Ambient volume">
-        <p id="ambientStatus" class="ambient-status" role="status">Choose a sound to settle in.</p>
-      </section>
-
-      <!-- October Calendar Widget -->
-      <div class="sidebar-widget movable-widget" id="calendarWidget" data-widget-name="Calendar">
-        <div class="widget-header">
-          <button type="button" class="widget-title widget-drag-handle" aria-label="Move Calendar card" aria-describedby="widgetMoveHint" title="Drag to place on screen"><span id="calendarMonthLabel">Calendar</span><span class="widget-grip" aria-hidden="true">⠿</span></button>
-          <button type="button" class="widget-return" aria-label="Return Calendar to sidebar" title="Return to sidebar">↶</button>
-        </div>
-
-        <div class="calendar-navigation">
-          <button type="button" id="calendarPrevious" aria-label="Previous month">‹</button>
-          <button type="button" id="calendarToday">Today</button>
-          <button type="button" id="calendarNext" aria-label="Next month">›</button>
-        </div>
-        <div class="cal-weekdays" aria-hidden="true">
-          <span>Mon</span><span>Tues</span><span>Wed</span><span>Thurs</span><span>Fri</span><span>Sat</span><span>Sun</span>
-        </div>
-        <div class="cal-grid" id="calendarDays" aria-label="Focus history calendar"></div>
-      </div>
-
-    </aside>
-    </div>
-    <main class="pomodoro-main" aria-label="Pomodoro timer">
-  <!-- Centered Interactive Stage -->
-  <div class="stage-wrapper relative flex flex-col items-center">
-
-    <h1 class="timer-title">Pomodoro Timer</h1>
-
-    <!-- The Neumorphic Squircle Card -->
-    <div class="squircle-plate" id="plateElement">
-
-      <!-- Concentric Circular Socket / Trench -->
-      <div class="socket-well">
-
-        <!-- Central Tactile Push Button / Display -->
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="pomodoro-layout">
+      <div class="sidebar-shell" id="sidebarShell">
         <button
           type="button"
-          id="timerButton"
-          class="push-button-dial"
-          onclick="handleDialPress()"
-          aria-label="Toggle Pomodoro Timer"
+          class="sidebar-toggle"
+          id="sidebarToggle"
+          aria-label="Show goals and calendar"
+          aria-controls="sidebarPanel"
+          aria-expanded="false"
         >
-          <!-- Digits -->
-          <span id="timeText" class="time-digits">25:00</span>
-          <!-- Soft pulsating status dot -->
-          <span class="status-indicator"></span>
+          <span></span><span></span><span></span>
         </button>
+        <aside
+          class="sidebar-panel"
+          id="sidebarPanel"
+          aria-label="Goals and calendar"
+          aria-hidden="true"
+          inert
+        >
+          <button
+            type="button"
+            id="resetLayoutButton"
+            class="pill-btn reset-layout-button"
+          >
+            Reset layout
+          </button>
+          <p id="layoutResetStatus" class="sr-only" role="status"></p>
+          <!-- Quote Block -->
+          <div class="quote-box">
+            <div class="quote-bar"></div>
+            <div class="quote-text">
+              Where attention goes,<br />energy flows.
+            </div>
+          </div>
 
+          <section
+            class="sidebar-widget movable-widget profile-card"
+            id="profileWidget"
+            data-widget-name="Profile"
+            aria-label="Your profile"
+          >
+            <div class="widget-header profile-drag-bar">
+              <button
+                type="button"
+                class="widget-title widget-drag-handle"
+                aria-label="Move Profile card"
+                aria-describedby="widgetMoveHint"
+                title="Drag profile card"
+              >
+                <span class="widget-grip" aria-hidden="true">⠿</span>
+              </button>
+              <button
+                type="button"
+                class="widget-return"
+                aria-label="Return Profile to sidebar"
+                title="Return to sidebar"
+              >
+                ↶
+              </button>
+            </div>
+            <button
+              type="button"
+              class="avatar-wrapper avatar-upload-button"
+              id="avatarUploadButton"
+              aria-label="Add or change profile photo"
+              title="Click to add a picture"
+            >
+              <svg
+                class="avatar-svg"
+                id="profilePlaceholder"
+                viewBox="0 0 100 100"
+                fill="none"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <rect width="100" height="100" rx="20" fill="#e4edf3" />
+                <circle cx="19" cy="20" r="8" fill="#5882A0" />
+                <path
+                  d="M2 65C13 47 23 46 35 57C45 66 51 60 58 43C66 23 76 27 89 54C93 62 98 58 98 66V86Q98 96 86 97Q50 102 15 96Q2 94 2 65Z"
+                  fill="#5882A0"
+                />
+              </svg>
+              <img
+                id="profilePhoto"
+                class="profile-photo"
+                alt="Profile photo"
+                hidden
+              />
+              <span class="avatar-upload-overlay" aria-hidden="true"
+                >Change photo</span
+              >
+            </button>
+            <div class="profile-info">
+              <h2 class="user-name" id="profileName">Christine Joy Espiritu</h2>
+              <p class="user-role" id="profileRole">Computer Science Student</p>
+              <span class="user-joined" id="profileJoined"
+                >joined since 2026</span
+              >
+              <button
+                class="btn-edit-profile"
+                type="button"
+                id="editProfileButton"
+              >
+                Edit Profile
+              </button>
+              <span class="user-focus" id="profileFocus"
+                >Total Focused: 0 min</span
+              >
+              <span
+                id="avatarUploadStatus"
+                class="avatar-upload-status"
+                role="status"
+                hidden
+              ></span>
+            </div>
+          </section>
+
+          <!-- Goal for today Widget -->
+          <div
+            class="sidebar-widget movable-widget"
+            id="goalWidget"
+            data-widget-name="Goal"
+          >
+            <div class="widget-header">
+              <button
+                type="button"
+                class="widget-title widget-drag-handle"
+                aria-label="Move Goal card"
+                aria-describedby="widgetMoveHint"
+                title="Drag to place on screen"
+              >
+                Goal for today:<span class="widget-grip" aria-hidden="true"
+                  >⠿</span
+                >
+              </button>
+              <button
+                type="button"
+                class="widget-return"
+                aria-label="Return Goal to sidebar"
+                title="Return to sidebar"
+              >
+                ↶
+              </button>
+            </div>
+            <div
+              class="goal-beads-row"
+              id="goalBeadsContainer"
+              role="group"
+              aria-label="Daily focus sessions"
+            ></div>
+          </div>
+
+          <section
+            class="sidebar-widget movable-widget weekly-stats"
+            id="weeklyStatsWidget"
+            data-widget-name="Weekly stats"
+            aria-label="Weekly focus statistics"
+          >
+            <div class="widget-header">
+              <button
+                type="button"
+                class="widget-title widget-drag-handle"
+                aria-label="Move Weekly stats card"
+                aria-describedby="widgetMoveHint"
+                title="Drag to place on screen"
+              >
+                Weekly stats<span class="widget-grip" aria-hidden="true"
+                  >⠿</span
+                >
+              </button>
+              <button
+                type="button"
+                class="widget-return"
+                aria-label="Return Weekly stats to sidebar"
+                title="Return to sidebar"
+              >
+                ↶
+              </button>
+            </div>
+            <p id="weeklyStatsRange" class="weekly-stats-range"></p>
+            <dl class="weekly-stats-grid">
+              <div>
+                <dt>Focus time</dt>
+                <dd id="weeklyFocusTime">0h 0m</dd>
+              </div>
+              <div>
+                <dt>Sessions</dt>
+                <dd id="weeklySessions">0</dd>
+              </div>
+              <div>
+                <dt>Daily streak</dt>
+                <dd id="weeklyStreak">0 days</dd>
+              </div>
+            </dl>
+          </section>
+
+          <section
+            class="sidebar-widget movable-widget ambient-card"
+            id="ambientWidget"
+            data-widget-name="Ambient sounds"
+            aria-label="Ambient sounds"
+          >
+            <div class="widget-header">
+              <button
+                type="button"
+                class="widget-title widget-drag-handle"
+                aria-label="Move Ambient sounds card"
+                aria-describedby="widgetMoveHint"
+                title="Drag to place on screen"
+              >
+                Ambient sounds<span class="widget-grip" aria-hidden="true"
+                  >⠿</span
+                >
+              </button>
+              <button
+                type="button"
+                class="widget-return"
+                aria-label="Return Ambient sounds to sidebar"
+                title="Return to sidebar"
+              >
+                ↶
+              </button>
+            </div>
+            <label for="ambientSoundSelect" class="ambient-label"
+              >Soundscape</label
+            >
+            <div class="ambient-play-row">
+              <select id="ambientSoundSelect">
+                <option value="rain">Rain</option>
+                <option value="cafe">Café</option>
+                <option value="white">White noise</option>
+              </select>
+              <button
+                type="button"
+                id="ambientPlayButton"
+                class="pill-btn"
+                aria-pressed="false"
+              >
+                Play
+              </button>
+            </div>
+            <label
+              for="ambientVolume"
+              class="ambient-label ambient-volume-label"
+              >Volume
+              <output id="ambientVolumeValue" for="ambientVolume"
+                >35%</output
+              ></label
+            >
+            <input
+              id="ambientVolume"
+              type="range"
+              min="0"
+              max="100"
+              value="35"
+              aria-label="Ambient volume"
+            />
+            <p id="ambientStatus" class="ambient-status" role="status">
+              Choose a sound to settle in.
+            </p>
+          </section>
+
+          <!-- October Calendar Widget -->
+          <div
+            class="sidebar-widget movable-widget"
+            id="calendarWidget"
+            data-widget-name="Calendar"
+          >
+            <div class="widget-header">
+              <button
+                type="button"
+                class="widget-title widget-drag-handle"
+                aria-label="Move Calendar card"
+                aria-describedby="widgetMoveHint"
+                title="Drag to place on screen"
+              >
+                <span id="calendarMonthLabel">Calendar</span
+                ><span class="widget-grip" aria-hidden="true">⠿</span>
+              </button>
+              <button
+                type="button"
+                class="widget-return"
+                aria-label="Return Calendar to sidebar"
+                title="Return to sidebar"
+              >
+                ↶
+              </button>
+            </div>
+
+            <div class="calendar-navigation">
+              <button
+                type="button"
+                id="calendarPrevious"
+                aria-label="Previous month"
+              >
+                ‹
+              </button>
+              <button type="button" id="calendarToday">Today</button>
+              <button type="button" id="calendarNext" aria-label="Next month">
+                ›
+              </button>
+            </div>
+            <div class="cal-weekdays" aria-hidden="true">
+              <span>Mon</span><span>Tues</span><span>Wed</span><span>Thurs</span
+              ><span>Fri</span><span>Sat</span><span>Sun</span>
+            </div>
+            <div
+              class="cal-grid"
+              id="calendarDays"
+              aria-label="Focus history calendar"
+            ></div>
+          </div>
+        </aside>
       </div>
+      <main class="pomodoro-main" aria-label="Pomodoro timer">
+        <!-- Centered Interactive Stage -->
+        <div class="stage-wrapper relative flex flex-col items-center">
+          <h1 class="timer-title">Pomodoro Timer</h1>
 
-      <!-- Hand-Drawn Annotation: Arrow & Note -->
-      <div class="annotation-box" id="annotationEl">
-        <svg width="34" height="18" viewBox="0 0 34 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M32 9C26 8 16 7.5 4 10.5" stroke="#1c1917" stroke-width="0.8" stroke-linecap="round"/>
-          <path d="M8 7.5L3.5 10.5L8.5 13" stroke="#1c1917" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <span class="handwritten-text" id="annotationLabel">Push to start</span>
-      </div>
+          <!-- The Neumorphic Squircle Card -->
+          <div class="squircle-plate" id="plateElement">
+            <!-- Concentric Circular Socket / Trench -->
+            <div class="socket-well">
+              <!-- Central Tactile Push Button / Display -->
+              <button
+                type="button"
+                id="timerButton"
+                class="push-button-dial"
+                onclick="handleDialPress()"
+                aria-label="Toggle Pomodoro Timer"
+              >
+                <!-- Digits -->
+                <span id="timeText" class="time-digits">25:00</span>
+                <!-- Soft pulsating status dot -->
+                <span class="status-indicator"></span>
+              </button>
+            </div>
 
-      <p class="break-message" id="breakMessage" aria-hidden="true">Take a break</p>
-    </div>
+            <!-- Hand-Drawn Annotation: Arrow & Note -->
+            <div class="annotation-box" id="annotationEl">
+              <svg
+                width="34"
+                height="18"
+                viewBox="0 0 34 18"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M32 9C26 8 16 7.5 4 10.5"
+                  stroke="#1c1917"
+                  stroke-width="0.8"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M8 7.5L3.5 10.5L8.5 13"
+                  stroke="#1c1917"
+                  stroke-width="0.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+              <span class="handwritten-text" id="annotationLabel"
+                >Push to start</span
+              >
+            </div>
 
-    <div class="current-task" id="currentTaskArea">
-      <label for="currentTaskInput">What are you focusing on?</label>
-      <input id="currentTaskInput" type="text" maxlength="120" placeholder="e.g. Finish my assignment" autocomplete="off">
-    </div>
+            <p class="break-message" id="breakMessage" aria-hidden="true">
+              Take a break
+            </p>
+          </div>
 
-    <!-- Discreet Mode Presets & Controls -->
-    <div class="minimal-controls mt-7 flex items-center space-x-2">
-      <button class="pill-btn active" id="modePomodoro" onclick="setMode('pomodoro')">25m</button>
-      <button class="pill-btn" id="modeShortBreak" onclick="setMode(currentMode)" hidden>Short break · 5m</button>
-      <button class="pill-btn" id="skipBreakButton" onclick="skipBreak()" hidden>Skip break</button>
-      <button class="pill-btn" onclick="resetTimer()" title="Reset Timer">Reset</button>
-      <button class="pill-btn" id="muteToggle" onclick="toggleAudio()" title="Toggle Sound">🔊</button>
-    </div>
+          <div class="current-task" id="currentTaskArea">
+            <label for="currentTaskInput">What are you focusing on?</label>
+            <input
+              id="currentTaskInput"
+              type="text"
+              maxlength="120"
+              placeholder="e.g. Finish my assignment"
+              autocomplete="off"
+            />
+          </div>
 
-
-  </div>
-
-    </main>
-  </div>
-
-  <p id="widgetMoveHint" class="widget-move-hint">Drag the title to move this card. Or press Enter to place it on screen, then use arrow keys to move it. Hold Shift for larger steps. Press Escape to return it to the sidebar.</p>
-  <input type="file" id="avatarUploadInput" accept="image/png,image/jpeg,image/webp" hidden>
-
-  <dialog id="profileDialog" class="profile-dialog" aria-labelledby="profileDialogTitle">
-    <form id="profileForm">
-      <h2 id="profileDialogTitle">Your profile</h2>
-      <p class="profile-save-note">Saved on this browser.</p>
-      <label for="profileNameInput">Display name</label>
-      <input id="profileNameInput" type="text" maxlength="50" required autocomplete="nickname">
-      <label for="profileRoleInput">About you</label>
-      <input id="profileRoleInput" type="text" maxlength="70" placeholder="e.g. Computer Science Student">
-      <label for="dailyGoalInput">Daily focus goal</label>
-      <input id="dailyGoalInput" type="number" min="1" max="99" step="1" required inputmode="numeric" aria-describedby="dailyGoalHint">
-      <p id="dailyGoalHint" class="profile-save-note">Focus sessions per day (1–99). Each completed Pomodoro fills one bead.</p>
-      <fieldset class="timer-duration-settings">
-        <legend>Timer durations</legend>
-        <div class="timer-duration-grid">
-          <div><label for="focusMinutesInput">Focus</label><input id="focusMinutesInput" type="number" min="1" max="180" step="1" required inputmode="numeric"></div>
-          <div><label for="shortBreakMinutesInput">Short break</label><input id="shortBreakMinutesInput" type="number" min="1" max="180" step="1" required inputmode="numeric"></div>
-          <div><label for="longBreakMinutesInput">Long break</label><input id="longBreakMinutesInput" type="number" min="1" max="180" step="1" required inputmode="numeric"></div>
+          <!-- Discreet Mode Presets & Controls -->
+          <div class="minimal-controls mt-7 flex items-center space-x-2">
+            <button
+              class="pill-btn active"
+              id="modePomodoro"
+              onclick="setMode('pomodoro')"
+            >
+              25m
+            </button>
+            <button
+              class="pill-btn"
+              id="modeShortBreak"
+              onclick="setMode(currentMode)"
+              hidden
+            >
+              Short break · 5m
+            </button>
+            <button
+              class="pill-btn"
+              id="skipBreakButton"
+              onclick="skipBreak()"
+              hidden
+            >
+              Skip break
+            </button>
+            <button class="pill-btn" onclick="resetTimer()" title="Reset Timer">
+              Reset
+            </button>
+            <button
+              class="pill-btn"
+              id="muteToggle"
+              onclick="toggleAudio()"
+              title="Toggle Sound"
+            >
+              🔊
+            </button>
+          </div>
         </div>
-        <p class="profile-save-note">Minutes (1–180). Every 4 completed focus sessions switches to a long break automatically.</p>
-        <p class="profile-save-note">Running or paused sessions keep their current duration. New settings apply to the next session.</p>
-      </fieldset>
-      <label class="profile-task-option" for="showCurrentTaskInput">
-        <span>Show “What are you focusing on?”</span>
-        <input id="showCurrentTaskInput" type="checkbox" role="switch" aria-describedby="currentTaskSettingHint">
-      </label>
-      <p id="currentTaskSettingHint" class="profile-save-note">Add a task beneath the timer and include it in session history.</p>
-      <label for="profilePhotoInput">Profile photo</label>
-      <input id="profilePhotoInput" type="file" accept="image/png,image/jpeg,image/webp">
-      <p class="profile-save-note">PNG, JPG or WebP · up to 2 MB</p>
-      <button type="button" class="profile-text-button" id="removeProfilePhoto">Use default avatar</button>
-      <p id="profileFormStatus" role="status" class="profile-form-status"></p>
-      <div class="profile-form-actions">
-        <button type="button" id="cancelProfile" class="profile-text-button">Cancel</button>
-        <button type="submit" id="saveProfileButton" class="btn-edit-profile">Save profile</button>
-      </div>
-    </form>
-  </dialog>
+      </main>
+    </div>
 
-  <div id="historyPopup" class="history-popup" role="tooltip" hidden>
-    <p id="historyPopupDate" class="history-popup-date"></p>
-    <div id="historyPopupBeads" class="history-popup-beads" aria-hidden="true" hidden></div>
-    <p id="historyPopupSessions" class="history-popup-sessions"></p>
-    <p id="historyPopupDuration" class="history-popup-duration"></p>
-    <ul id="historyPopupTasks" class="history-popup-tasks" hidden></ul>
-  </div>
+    <p id="widgetMoveHint" class="widget-move-hint">
+      Drag the title to move this card. Or press Enter to place it on screen,
+      then use arrow keys to move it. Hold Shift for larger steps. Press Escape
+      to return it to the sidebar.
+    </p>
+    <input
+      type="file"
+      id="avatarUploadInput"
+      accept="image/png,image/jpeg,image/webp"
+      hidden
+    />
 
-  <p id="persistenceStatus" class="persistence-note" role="status" hidden></p>
-  <script src="script.js"></script>
-  <script src="ambient.js"></script>
-</body>
+    <dialog
+      id="profileDialog"
+      class="profile-dialog"
+      aria-labelledby="profileDialogTitle"
+    >
+      <form id="profileForm">
+        <h2 id="profileDialogTitle">Your profile</h2>
+        <p class="profile-save-note">Saved on this browser.</p>
+        <label for="profileNameInput">Display name</label>
+        <input
+          id="profileNameInput"
+          type="text"
+          maxlength="50"
+          required
+          autocomplete="nickname"
+        />
+        <label for="profileRoleInput">About you</label>
+        <input
+          id="profileRoleInput"
+          type="text"
+          maxlength="70"
+          placeholder="e.g. Computer Science Student"
+        />
+        <label for="dailyGoalInput">Daily focus goal</label>
+        <input
+          id="dailyGoalInput"
+          type="number"
+          min="1"
+          max="99"
+          step="1"
+          required
+          inputmode="numeric"
+          aria-describedby="dailyGoalHint"
+        />
+        <p id="dailyGoalHint" class="profile-save-note">
+          Focus sessions per day (1–99). Each completed Pomodoro fills one bead.
+        </p>
+        <fieldset class="timer-duration-settings">
+          <legend>Timer durations</legend>
+          <div class="timer-duration-grid">
+            <div>
+              <label for="focusMinutesInput">Focus</label
+              ><input
+                id="focusMinutesInput"
+                type="number"
+                min="1"
+                max="180"
+                step="1"
+                required
+                inputmode="numeric"
+              />
+            </div>
+            <div>
+              <label for="shortBreakMinutesInput">Short break</label
+              ><input
+                id="shortBreakMinutesInput"
+                type="number"
+                min="1"
+                max="180"
+                step="1"
+                required
+                inputmode="numeric"
+              />
+            </div>
+            <div>
+              <label for="longBreakMinutesInput">Long break</label
+              ><input
+                id="longBreakMinutesInput"
+                type="number"
+                min="1"
+                max="180"
+                step="1"
+                required
+                inputmode="numeric"
+              />
+            </div>
+          </div>
+          <p class="profile-save-note">
+            Minutes (1–180). Every 4 completed focus sessions switches to a long
+            break automatically.
+          </p>
+          <p class="profile-save-note">
+            Running or paused sessions keep their current duration. New settings
+            apply to the next session.
+          </p>
+        </fieldset>
+        <label class="profile-task-option" for="showCurrentTaskInput">
+          <span>Show “What are you focusing on?”</span>
+          <input
+            id="showCurrentTaskInput"
+            type="checkbox"
+            role="switch"
+            aria-describedby="currentTaskSettingHint"
+          />
+        </label>
+        <p id="currentTaskSettingHint" class="profile-save-note">
+          Add a task beneath the timer and include it in session history.
+        </p>
+        <label for="profilePhotoInput">Profile photo</label>
+        <input
+          id="profilePhotoInput"
+          type="file"
+          accept="image/png,image/jpeg,image/webp"
+        />
+        <p class="profile-save-note">PNG, JPG or WebP · up to 2 MB</p>
+        <button
+          type="button"
+          class="profile-text-button"
+          id="removeProfilePhoto"
+        >
+          Use default avatar
+        </button>
+        <p id="profileFormStatus" role="status" class="profile-form-status"></p>
+        <div class="profile-form-actions">
+          <button type="button" id="cancelProfile" class="profile-text-button">
+            Cancel
+          </button>
+          <button type="submit" id="saveProfileButton" class="btn-edit-profile">
+            Save profile
+          </button>
+        </div>
+      </form>
+    </dialog>
+
+    <div id="historyPopup" class="history-popup" role="tooltip" hidden>
+      <p id="historyPopupDate" class="history-popup-date"></p>
+      <div
+        id="historyPopupBeads"
+        class="history-popup-beads"
+        aria-hidden="true"
+        hidden
+      ></div>
+      <p id="historyPopupSessions" class="history-popup-sessions"></p>
+      <p id="historyPopupDuration" class="history-popup-duration"></p>
+      <ul id="historyPopupTasks" class="history-popup-tasks" hidden></ul>
+    </div>
+
+    <p id="persistenceStatus" class="persistence-note" role="status" hidden></p>
+    <script src="script.js"></script>
+    <script src="ambient.js"></script>
+  </body>
 </html>
