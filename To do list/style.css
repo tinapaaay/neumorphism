@@ -577,3 +577,124 @@
     }
     .water-controls button:disabled { opacity: 0.35; cursor: default; }
     .water-controls button:focus-visible { outline: 1px solid #85A6B1; outline-offset: 2px; }
+
+    /* Add task form */
+    .todo-items-list {
+      max-height: 264px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 6px;
+      margin: -6px;
+      scrollbar-width: thin;
+      scrollbar-color: #B1A384 transparent;
+    }
+    .todo-row { flex-shrink: 0; }
+    .add-task-row { font-family: inherit; }
+    .add-task-row:focus-visible { outline: 1px solid #B1A384; outline-offset: 2px; }
+    .task-dialog {
+      position: fixed;
+      inset: 0;
+      margin: auto;
+      width: min(330px, calc(100vw - 40px));
+      padding: 26px;
+      border: 1px solid rgba(255, 251, 247, 0.8);
+      border-radius: 28px;
+      background: #F5EFEB;
+      color: rgba(0, 0, 0, 0.65);
+      box-shadow: 12px 14px 35px rgba(103, 91, 79, 0.18), inset 1px 1px 2px #FFFBF7;
+    }
+    .task-dialog::backdrop { background: rgba(92, 82, 71, 0.16); backdrop-filter: blur(4px); }
+    .task-dialog-header { display: flex; align-items: center; gap: 12px; justify-content: space-between; }
+    .task-dialog-header h2 { font-size: 14px; line-height: 21px; font-weight: 400; }
+    .task-close {
+      width: 26px;
+      height: 26px;
+      flex-shrink: 0;
+      border: 0;
+      border-radius: 50%;
+      background: transparent;
+      font: 20px 'Short Stack', sans-serif;
+      color: #958B7A;
+      cursor: pointer;
+    }
+    .task-dialog-hint { margin: 5px 0 22px; font-size: 9px; color: rgba(0, 0, 0, 0.45); }
+    .task-input-label { display: block; margin-bottom: 9px; font-size: 10px; }
+    .task-name-input {
+      width: 100%;
+      min-width: 0;
+      padding: 13px 14px;
+      border: 1px solid transparent;
+      border-radius: 13px;
+      background: #F5EFEB;
+      box-shadow: inset 2px 2px 5px rgba(193, 182, 172, 0.35), inset -2px -2px 5px #FFFBF7;
+      font: 11px/18px 'Short Stack', sans-serif;
+      color: rgba(0, 0, 0, 0.7);
+      user-select: text;
+      -webkit-user-select: text;
+    }
+    .task-name-input::placeholder { color: rgba(100, 98, 96, 0.45); }
+    .task-name-input:focus-visible { outline: 1px solid #B1A384; outline-offset: 2px; }
+    .task-dialog-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; }
+    .task-action {
+      padding: 10px 15px;
+      border: 0;
+      border-radius: 12px;
+      font: 10px/16px 'Short Stack', sans-serif;
+      cursor: pointer;
+    }
+    .task-cancel { background: transparent; color: rgba(0, 0, 0, 0.5); }
+    .task-submit {
+      background: #B1A384;
+      color: #302C24;
+      box-shadow: 3px 3px 7px rgba(164, 149, 124, 0.3), -3px -3px 7px #FFFBF7;
+    }
+    .task-submit:active { box-shadow: inset 2px 2px 4px rgba(103, 91, 69, 0.25); }
+    .task-action:focus-visible, .task-close:focus-visible { outline: 1px solid #958B7A; outline-offset: 3px; }
+
+    /* Clear completed tasks */
+    .clear-finished-button {
+      position: absolute;
+      right: 23px;
+      top: 24px;
+      padding: 5px 7px;
+      border: none;
+      border-radius: 8px;
+      background: #F5EFEB;
+      box-shadow: 2px 2px 4px rgba(193, 182, 172, 0.28), -2px -2px 4px #FFFBF7;
+      font: 7px/10px 'Short Stack', sans-serif;
+      color: #756A56;
+      cursor: pointer;
+    }
+    .clear-finished-button:disabled { opacity: 0.4; cursor: default; box-shadow: none; }
+    .clear-finished-button:active:not(:disabled) { box-shadow: inset 1px 1px 3px rgba(193, 182, 172, 0.4); }
+    .task-undo-toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      max-width: calc(100vw - 32px);
+      padding: 12px 16px;
+      border: 1px solid #FFFBF7;
+      border-radius: 16px;
+      background: #F5EFEB;
+      box-shadow: 4px 6px 18px rgba(103, 91, 79, 0.15);
+      color: rgba(0, 0, 0, 0.6);
+      font-size: 10px;
+      line-height: 16px;
+    }
+    .task-undo-toast[hidden] { display: none; }
+    .task-undo-toast button {
+      padding: 5px 9px;
+      border: 0;
+      border-radius: 8px;
+      background: #B1A384;
+      color: #302C24;
+      font: 10px/16px 'Short Stack', sans-serif;
+      cursor: pointer;
+    }
+    .clear-finished-button:focus-visible,
+    .task-undo-toast button:focus-visible { outline: 1px solid #958B7A; outline-offset: 3px; }

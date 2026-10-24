@@ -20,27 +20,58 @@
 
     function toggleTask(elem) {
       const isDone = elem.classList.toggle('done');
+      saveTasks();
+      updateClearFinishedButton();
       playPopSound(isDone);
     }
 
     function addNewTask() {
-      const task = prompt('Enter new task:');
-      if (!task || !task.trim()) return;
+      document.getElementById('add-task-dialog').showModal();
+      document.getElementById('new-task-input').focus();
+    }
+
+    function closeTaskDialog() {
+      document.getElementById('add-task-dialog').close();
+    }
+
+    const taskDialog = document.getElementById('add-task-dialog');
+    const taskForm = document.getElementById('add-task-form');
+    const taskInput = document.getElementById('new-task-input');
+
+    document.getElementById('close-task-dialog').addEventListener('click', closeTaskDialog);
+    document.getElementById('cancel-task-dialog').addEventListener('click', closeTaskDialog);
+    taskDialog.addEventListener('close', () => {
+      taskForm.reset();
+      taskInput.setCustomValidity('');
+      document.getElementById('add-task-button').focus();
+    });
+    taskInput.addEventListener('input', () => taskInput.setCustomValidity(''));
+    taskForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const task = taskInput.value.trim();
+      if (!task) {
+        taskInput.setCustomValidity('Please enter a task name.');
+        taskInput.reportValidity();
+        return;
+      }
 
       const container = document.getElementById('todo-container');
-      const addRow = container.lastElementChild;
-
+      const addRow = document.getElementById('add-task-button');
       const newRow = document.createElement('div');
       newRow.className = 'todo-row';
       newRow.onclick = function() { toggleTask(this); };
-      newRow.innerHTML = `
-        <div class="pop-ball ball-style-a"></div>
-        <span class="todo-task-label">${task.trim()}</span>
-      `;
-
+      const ball = document.createElement('div');
+      ball.className = 'pop-ball ball-style-a';
+      const label = document.createElement('span');
+      label.className = 'todo-task-label';
+      label.textContent = task;
+      newRow.append(ball, label);
       container.insertBefore(newRow, addRow);
+      saveTasks();
+      closeTaskDialog();
+      addRow.scrollIntoView({ block: 'nearest' });
       playPopSound(false);
-    }
+    });
 
     function updateLiveClock() {
       const now = new Date();
@@ -129,3 +160,79 @@
     document.getElementById('water-plus').addEventListener('click', () => changeWaterIntake(WATER_STEP));
     updateSummaryWidgets();
     setInterval(updateSummaryWidgets, 1000);
+
+    const TASKS_STORAGE_KEY = 'todo-dashboard-tasks';
+    let lastClearedTasks = [];
+
+    function updateClearFinishedButton() {
+      const count = document.querySelectorAll('#todo-container .todo-row.done').length;
+      const button = document.getElementById('clear-finished-button');
+      button.disabled = count === 0;
+      button.textContent = count ? `Clear finished (${count})` : 'Clear finished';
+    }
+
+    function saveTasks() {
+      const tasks = Array.from(document.querySelectorAll('#todo-container .todo-row:not(.add-task-row)'), row => ({
+        text: row.querySelector('.todo-task-label').textContent,
+        done: row.classList.contains('done')
+      }));
+      try {
+        localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify(tasks));
+      } catch (error) {
+        // Tasks remain usable when browser storage is unavailable.
+      }
+    }
+
+    function restoreSavedTasks() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(TASKS_STORAGE_KEY));
+        if (!Array.isArray(saved) || !saved.every(task => task && typeof task.text === 'string' && typeof task.done === 'boolean')) return;
+        const container = document.getElementById('todo-container');
+        const addRow = document.getElementById('add-task-button');
+        container.querySelectorAll('.todo-row:not(.add-task-row)').forEach(row => row.remove());
+        saved.forEach(task => {
+          const row = document.createElement('div');
+          row.className = task.done ? 'todo-row done' : 'todo-row';
+          row.onclick = function() { toggleTask(this); };
+          const ball = document.createElement('div');
+          ball.className = 'pop-ball ball-style-a';
+          const label = document.createElement('span');
+          label.className = 'todo-task-label';
+          label.textContent = task.text;
+          row.append(ball, label);
+          container.insertBefore(row, addRow);
+        });
+      } catch (error) {
+        // Use the original task list if saved data cannot be read.
+      }
+    }
+
+    function clearFinishedTasks() {
+      const rows = Array.from(document.querySelectorAll('#todo-container .todo-row.done'));
+      if (!rows.length) return;
+      lastClearedTasks = rows.map(row => ({ row, next: row.nextElementSibling }));
+      rows.forEach(row => row.remove());
+      saveTasks();
+      updateClearFinishedButton();
+      document.getElementById('task-removal-message').textContent = `${rows.length} finished ${rows.length === 1 ? 'task' : 'tasks'} cleared`;
+      document.getElementById('task-undo-toast').hidden = false;
+      document.getElementById('add-task-button').focus();
+    }
+
+    function undoClearTasks() {
+      const container = document.getElementById('todo-container');
+      const addRow = document.getElementById('add-task-button');
+      lastClearedTasks.slice().reverse().forEach(({ row, next }) => {
+        container.insertBefore(row, next && next.parentNode === container ? next : addRow);
+      });
+      lastClearedTasks = [];
+      document.getElementById('task-undo-toast').hidden = true;
+      saveTasks();
+      updateClearFinishedButton();
+      document.getElementById('clear-finished-button').focus();
+    }
+
+    document.getElementById('clear-finished-button').addEventListener('click', clearFinishedTasks);
+    document.getElementById('undo-clear-tasks').addEventListener('click', undoClearTasks);
+    restoreSavedTasks();
+    updateClearFinishedButton();

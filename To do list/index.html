@@ -59,7 +59,7 @@
     <!-- To Do List Widget -->
     <div class="todo-card">
       <div class="todo-title">To do list:</div>
-      <div class="todo-tip">Tip: pop the buttons</div>
+      <button type="button" id="clear-finished-button" class="clear-finished-button" disabled>Clear finished</button>
 
       <div class="todo-items-list" id="todo-container">
         <!-- Brush my teeth (Group 12) -->
@@ -99,10 +99,10 @@
         </div>
 
         <!-- Add new task (Group 18) -->
-        <div class="todo-row" onclick="addNewTask()">
-          <span class="add-task-plus">+</span>
+        <button type="button" class="todo-row add-task-row" id="add-task-button" onclick="addNewTask()">
+          <span class="add-task-plus" aria-hidden="true">+</span>
           <span class="todo-task-label">Add new task</span>
-        </div>
+        </button>
       </div>
     </div>
 
@@ -131,6 +131,27 @@
         <textarea id="notes-input" class="notes-input" aria-label="Write your notes" placeholder="Write something…" spellcheck="false"></textarea>
       </div>
     </section>
+  </div>
+
+  <dialog id="add-task-dialog" class="task-dialog" aria-labelledby="add-task-title">
+    <form id="add-task-form" class="task-form">
+      <div class="task-dialog-header">
+        <h2 id="add-task-title">A little task for today</h2>
+        <button type="button" class="task-close" id="close-task-dialog" aria-label="Close add task">×</button>
+      </div>
+      <p class="task-dialog-hint">One thing at a time.</p>
+      <label class="task-input-label" for="new-task-input">Task name</label>
+      <input id="new-task-input" name="task" class="task-name-input" placeholder="What would you like to do?" maxlength="80" required autocomplete="off" autofocus>
+      <div class="task-dialog-actions">
+        <button type="button" class="task-action task-cancel" id="cancel-task-dialog">Cancel</button>
+        <button type="submit" class="task-action task-submit"><span aria-hidden="true">+</span> Add task</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="task-undo-toast" class="task-undo-toast" hidden>
+    <span id="task-removal-message" role="status"></span>
+    <button type="button" id="undo-clear-tasks">Undo</button>
   </div>
 
   <script src="script.js"></script>
