@@ -1,0 +1,274 @@
+    :root {
+      /* Sampled exact cool-tinted neumorphic base tone */
+      --bg-base: #dce5ec;
+      --text-color: #171717;
+
+      /* Outer squircle plate: smooth multi-angle drop and highlight */
+      --outer-plate-shadow:
+        14px 16px 32px rgba(165, 180, 194, 0.65),
+        -14px -14px 30px rgba(255, 255, 255, 0.95),
+        inset 1px 1px 1.5px rgba(255, 255, 255, 0.6);
+
+      /* Outer Beveled Trench Well */
+      --well-socket-shadow:
+        inset 5px 6px 10px rgba(158, 174, 188, 0.65),
+        inset -5px -5px 10px rgba(255, 255, 255, 0.95),
+        0 2px 4px rgba(255, 255, 255, 0.8);
+
+      /* POPPED OUT STATE (Raised / Idle / Paused) */
+      --dial-popped-shadow:
+        9px 12px 20px rgba(155, 172, 188, 0.72),
+        -8px -8px 18px rgba(255, 255, 255, 0.98),
+        inset 1px 1px 2px rgba(255, 255, 255, 0.9),
+        inset -1px -1px 2px rgba(170, 185, 198, 0.4);
+
+      /* PUSHED DOWN STATE (Sunken / Running) */
+      --dial-pushed-shadow:
+        inset 6px 7px 12px rgba(142, 158, 172, 0.8),
+        inset -5px -5px 9px rgba(255, 255, 255, 0.75),
+        1px 1px 2px rgba(255, 255, 255, 0.85);
+    }
+
+    body {
+      background-color: var(--bg-base);
+      font-family: 'Inter', sans-serif;
+      color: var(--text-color);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+      padding: 20px;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    /* 1. Outer Squircle Card Plate */
+    .squircle-plate {
+      width: 256px;
+      height: 256px;
+      background-color: var(--bg-base);
+      border-radius: 54px;
+      box-shadow: var(--outer-plate-shadow);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    /* 2. Concentric Sunken Circular Socket / Well */
+    .socket-well {
+      width: 172px;
+      height: 172px;
+      border-radius: 50%;
+      background-color: var(--bg-base);
+      box-shadow: var(--well-socket-shadow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    /* 3. The Physical Central Tactile Dial */
+    .push-button-dial {
+      width: 128px;
+      height: 128px;
+      border-radius: 50%;
+      cursor: pointer;
+      position: relative;
+      outline: none;
+      border: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: 
+        transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1),
+        box-shadow 0.22s ease,
+        background 0.22s ease;
+
+      /* DEFAULT: POPPED OUT / RAISED */
+      background: radial-gradient(circle at 35% 30%, #f4f8fb 0%, #dde6ee 60%, #c8d5e1 100%);
+      box-shadow: var(--dial-popped-shadow);
+      transform: scale(1) translateY(0);
+    }
+
+    /* Hover effect while popped up */
+    .push-button-dial:not(.is-pushed):hover {
+      box-shadow: 
+        11px 14px 24px rgba(150, 168, 184, 0.8),
+        -9px -9px 20px rgba(255, 255, 255, 1),
+        inset 1px 1px 2px rgba(255, 255, 255, 0.95);
+      transform: translateY(-1px);
+    }
+
+    /* PUSHED DOWN (RUNNING STATE) */
+    .push-button-dial.is-pushed {
+      transform: scale(0.96) translateY(2px) !important;
+      background: radial-gradient(circle at 50% 50%, #d2dce4 0%, #c7d2dc 70%, #b8c4ce 100%);
+      box-shadow: var(--dial-pushed-shadow);
+    }
+
+    /* Subtle click spring active state */
+    .push-button-dial:active {
+      transform: scale(0.94) translateY(3px);
+    }
+
+    /* Digits Display */
+    .time-digits {
+      font-size: 23px;
+      font-weight: 500;
+      letter-spacing: 1.5px;
+      color: #050505;
+      font-variant-numeric: tabular-nums;
+      transition: transform 0.2s ease, color 0.2s ease;
+    }
+
+    .push-button-dial.is-pushed .time-digits {
+      color: #1a1e22;
+      transform: translateY(1px);
+    }
+
+    /* Running status dot inside the dial */
+    .status-indicator {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #7a8d9e;
+      margin-top: 4px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    /* Hand-Drawn Annotation */
+    .annotation-box {
+      position: absolute;
+      left: calc(100% - 15px);
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+      pointer-events: none;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .annotation-box.is-hidden {
+      opacity: 0;
+    }
+
+    .handwritten-text {
+      font-family: 'Short Stack', cursive, sans-serif;
+      font-size: 11px;
+      line-height: 1;
+      color: rgba(20, 20, 20, 0.82);
+      margin-left: 6px;
+      letter-spacing: 0.3px;
+    }
+
+    /* Minimal discreet controls on hover */
+    .minimal-controls {
+      opacity: 0.45;
+      transform: translateY(2px);
+      transition: all 0.25s ease;
+    }
+    .stage-wrapper:hover .minimal-controls,
+    .minimal-controls:focus-within {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .pill-btn {
+      background-color: var(--bg-base);
+      border-radius: 9999px;
+      box-shadow: 
+        3px 3px 6px rgba(168, 183, 196, 0.6),
+        -3px -3px 6px rgba(255, 255, 255, 0.95);
+      font-size: 11px;
+      font-family: 'Short Stack', cursive, sans-serif;
+      color: #4b5563;
+      padding: 5px 12px;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s ease;
+    }
+
+    .pill-btn:hover {
+      box-shadow: 
+        2px 2px 4px rgba(165, 180, 193, 0.75),
+        -2px -2px 4px rgba(255, 255, 255, 1);
+      color: #111827;
+    }
+
+    .pill-btn:active, .pill-btn.active {
+      box-shadow: 
+        inset 2px 2px 4px rgba(155, 170, 183, 0.75),
+        inset -2px -2px 4px rgba(255, 255, 255, 0.85);
+      color: #0f172a;
+    }
+
+    .timer-title {
+      margin: 0 0 24px;
+      font-family: 'Short Stack', cursive, sans-serif;
+      font-size: 20px;
+      font-weight: 400;
+      line-height: 1.4;
+      text-align: center;
+      color: var(--text-color);
+    }
+
+    /* Quiet heading and break-mode caption */
+    .timer-title {
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 0.45s ease, transform 0.45s ease;
+      animation: title-arrive 0.6s ease-out;
+    }
+    .stage-wrapper.title-is-quiet .timer-title {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+    .stage-wrapper.title-is-quiet:has(:focus-visible) .timer-title {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    @media (hover: hover) {
+      .stage-wrapper.title-is-quiet:hover .timer-title {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .break-message {
+      position: absolute;
+      bottom: 16px;
+      left: 0;
+      width: 100%;
+      margin: 0;
+      font-family: 'Short Stack', cursive, sans-serif;
+      font-size: 13px;
+      line-height: 18px;
+      font-weight: 400;
+      text-align: center;
+      color: var(--text-color);
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(5px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+    .squircle-plate.is-break .break-message {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    @keyframes title-arrive {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .timer-title, .break-message { animation: none; transition: none; }
+    }
+
+    .squircle-plate.is-break.is-running .break-message {
+      opacity: 0;
+      transform: translateY(5px);
+    }

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Neumorphic Pomodoro Timer</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts: Short Stack for the hand-drawn note, Inter for clean numbers -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Short+Stack&display=swap" rel="stylesheet">
+
+  <!-- Tone.js for tactile acoustic pops and gentle bell alerts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Centered Interactive Stage -->
+  <div class="stage-wrapper relative flex flex-col items-center">
+
+    <h1 class="timer-title">Pomodoro Timer</h1>
+
+    <!-- The Neumorphic Squircle Card -->
+    <div class="squircle-plate" id="plateElement">
+
+      <!-- Concentric Circular Socket / Trench -->
+      <div class="socket-well">
+
+        <!-- Central Tactile Push Button / Display -->
+        <button 
+          type="button" 
+          id="timerButton" 
+          class="push-button-dial"
+          onclick="handleDialPress()"
+          aria-label="Toggle Pomodoro Timer"
+        >
+          <!-- Digits -->
+          <span id="timeText" class="time-digits">25:00</span>
+          <!-- Soft pulsating status dot -->
+          <span class="status-indicator"></span>
+        </button>
+
+      </div>
+
+      <!-- Hand-Drawn Annotation: Arrow & Note -->
+      <div class="annotation-box" id="annotationEl">
+        <svg width="34" height="18" viewBox="0 0 34 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M32 9C26 8 16 7.5 4 10.5" stroke="#1c1917" stroke-width="0.8" stroke-linecap="round"/>
+          <path d="M8 7.5L3.5 10.5L8.5 13" stroke="#1c1917" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="handwritten-text" id="annotationLabel">Push to start</span>
+      </div>
+
+      <p class="break-message" id="breakMessage" aria-hidden="true">Take a break</p>
+    </div>
+
+    <!-- Discreet Mode Presets & Controls -->
+    <div class="minimal-controls mt-7 flex items-center space-x-2">
+      <button class="pill-btn active" id="modePomodoro" onclick="setMode(25, this)">25m</button>
+      <button class="pill-btn" id="modeShortBreak" onclick="setMode(5, this)">Short break · 5m</button>
+      <button class="pill-btn" onclick="resetTimer()" title="Reset Timer">Reset</button>
+      <button class="pill-btn" id="muteToggle" onclick="toggleAudio()" title="Toggle Sound">🔊</button>
+    </div>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
