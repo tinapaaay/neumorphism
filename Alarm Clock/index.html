@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Neumorphic Alarm</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Tone.js for soft tactile feedback sounds -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="min-h-screen flex items-center justify-center p-4 sm:p-8">
+
+  <!-- Main Phone / Card Container -->
+  <div class="neu-card w-full max-w-[390px] p-8 pt-9 pb-10 flex flex-col items-center relative select-none">
+    
+    <!-- Top Header -->
+    <div class="w-full flex items-center justify-between mb-8 px-1">
+      <h1 class="text-3xl font-extrabold tracking-tight text-[#3b2b37]">Alarm</h1>
+      <button 
+        id="menuBtn" 
+        onclick="toggleSettingsMenu()"
+        aria-label="Settings and Options"
+        class="neu-btn w-11 h-11 rounded-full flex items-center justify-center space-x-1 cursor-pointer focus:outline-none"
+      >
+        <span class="w-1.5 h-1.5 rounded-full bg-[#82717e]"></span>
+        <span class="w-1.5 h-1.5 rounded-full bg-[#82717e]"></span>
+        <span class="w-1.5 h-1.5 rounded-full bg-[#82717e]"></span>
+      </button>
+    </div>
+
+    <!-- Dropdown Menu -->
+    <div id="settingsMenu" class="hidden absolute top-20 right-8 z-30 w-48 bg-[#f0f2f4] rounded-2xl shadow-xl p-2 border border-white/50 text-xs text-[#4b3c48]">
+      <button onclick="toggleRealtimeMode()" class="w-full text-left px-3 py-2.5 rounded-xl hover:bg-white/70 flex items-center justify-between font-medium">
+        <span>Clock: <strong id="clockModeLabel">Screenshot (3:00)</strong></span>
+      </button>
+      <button onclick="openAddAlarmModal()" class="w-full text-left px-3 py-2.5 rounded-xl hover:bg-white/70 flex items-center justify-between font-medium">
+        <span>+ Add New Alarm</span>
+      </button>
+      <button onclick="toggleSound()" class="w-full text-left px-3 py-2.5 rounded-xl hover:bg-white/70 flex items-center justify-between font-medium border-t border-gray-200/50 mt-1">
+        <span>Tactile Audio: <strong id="soundLabel">On</strong></span>
+      </button>
+    </div>
+
+    <!-- Neumorphic Analog Clock Section -->
+    <div class="relative w-64 h-64 flex items-center justify-center my-2">
+      <!-- Crosshair / Hour Marker Ticks (Screenshot Accents) -->
+      <!-- Top 12 o'clock tick -->
+      <div class="absolute top-[18px] left-1/2 -translate-x-1/2 w-[2px] h-[16px] bg-[#d96668] rounded-full z-10 pointer-events-none opacity-90"></div>
+      <!-- Bottom 6 o'clock tick -->
+      <div class="absolute bottom-[18px] left-1/2 -translate-x-1/2 w-[2px] h-[16px] bg-[#d96668] rounded-full z-10 pointer-events-none opacity-90"></div>
+      <!-- Left 9 o'clock tick -->
+      <div class="absolute left-[18px] top-1/2 -translate-y-1/2 h-[2px] w-[16px] bg-[#d96668] rounded-full z-10 pointer-events-none opacity-90"></div>
+      <!-- Right 3 o'clock tick -->
+      <div class="absolute right-[18px] top-1/2 -translate-y-1/2 h-[2px] w-[16px] bg-[#d96668] rounded-full z-10 pointer-events-none opacity-90"></div>
+
+      <!-- Outer Squircle Plate -->
+      <div class="neu-clock-plate w-56 h-56 flex items-center justify-center">
+        <!-- Inner Raised Dial -->
+        <div class="neu-clock-dial w-36 h-36 rounded-full relative flex items-center justify-center">
+          
+          <!-- Secondary inner subtle ticks at 12 & 9 inside circle if desired -->
+          <div class="absolute top-2 w-[1.5px] h-2 bg-[#d96668]/40 rounded-full"></div>
+          
+          <!-- Clock Hands -->
+          <!-- Hour Hand (Screenshot: points straight to 3 o'clock / 90deg) -->
+          <div 
+            id="hourHand" 
+            class="clock-hand absolute w-[2.5px] h-[34px] bg-[#53434f] rounded-full"
+            style="bottom: 50%; left: calc(50% - 1.25px); transform-origin: bottom center; transform: rotate(90deg);"
+          ></div>
+
+          <!-- Minute Hand (Screenshot: points straight to 12 o'clock / 0deg) -->
+          <div 
+            id="minuteHand" 
+            class="clock-hand absolute w-[2px] h-[48px] bg-[#d96668] rounded-full"
+            style="bottom: 50%; left: calc(50% - 1px); transform-origin: bottom center; transform: rotate(0deg);"
+          ></div>
+
+          <!-- Center Pivot Pin -->
+          <div class="w-2.5 h-2.5 rounded-full bg-[#53434f] z-20 shadow-sm border border-[#f0f2f4]"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Alarm Notification Banner -->
+    <div id="alarmStatusBanner" class="h-6 mt-1 mb-3 flex items-center justify-center text-xs tracking-wide font-medium text-[#735e6e] opacity-80 transition-all">
+      <span id="nextAlarmCountdown">Next alarm in 7 hours 18 mins</span>
+    </div>
+
+    <!-- Alarms List Container -->
+    <div id="alarmsList" class="w-full space-y-3.5 mt-1">
+      <!-- Dynamic list populated by JS to match initial screenshot -->
+    </div>
+
+  </div>
+
+  <!-- Modal for Creating a New Alarm -->
+  <div id="addAlarmModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop">
+    <div class="neu-card w-full max-w-xs p-6 bg-[#eceef0] relative text-[#42323f]">
+      <h3 class="text-xl font-bold mb-4">Set Alarm</h3>
+      
+      <div class="flex items-center justify-center space-x-2 my-5">
+        <input id="inputHour" type="number" min="1" max="12" value="6" class="w-16 p-2.5 text-center text-xl font-bold rounded-2xl bg-[#e5e8ec] shadow-inner focus:outline-none">
+        <span class="text-xl font-bold">:</span>
+        <input id="inputMin" type="number" min="0" max="59" value="30" class="w-16 p-2.5 text-center text-xl font-bold rounded-2xl bg-[#e5e8ec] shadow-inner focus:outline-none">
+        <select id="inputPeriod" class="p-2.5 text-base font-semibold rounded-2xl bg-[#e5e8ec] shadow-inner focus:outline-none">
+          <option value="am">AM</option>
+          <option value="pm">PM</option>
+        </select>
+      </div>
+
+      <div class="flex space-x-3 mt-6">
+        <button onclick="closeAddAlarmModal()" class="flex-1 py-2.5 rounded-full neu-btn text-sm font-semibold text-gray-500 hover:text-gray-700">Cancel</button>
+        <button onclick="saveNewAlarm()" class="flex-1 py-2.5 rounded-full neu-btn text-sm font-bold text-[#8f7488]">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast for feedback / messages -->
+  <div id="toastMessage" class="fixed bottom-6 left-1/2 -translate-x-1/2 px-5 py-2.5 rounded-full bg-[#3b2b37] text-white text-xs font-semibold tracking-wide shadow-2xl opacity-0 pointer-events-none transition-all duration-300 z-50">
+    Alarm toggled
+  </div>
+
+  <!-- Application Logic -->
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Neumorphic Sign Up</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      box-sizing: border-box;
+    }
+
+    :root {
+      /* Exact Requested Colors - Strictly Applied Everywhere */
+      --neu-base: #EAEAEA;
+      --text-main: #574C57;
+
+      /* EXACT FIGMA SPECIFICATIONS */
+
+      /* 1. Inset Pill Inputs (3-layer setup provided) */
+      --input-sunken: 
+        inset 3px 3px 6px rgba(163, 177, 198, 0.38),
+        inset -3px -3px 6px rgba(255, 255, 255, 0.95),
+        1px 1px 2px rgba(255, 255, 255, 0.70);
+
+      --input-sunken-focus:
+        inset 4px 4px 7px rgba(163, 177, 198, 0.52),
+        inset -3px -3px 6px rgba(255, 255, 255, 1.0),
+        1px 1px 2px rgba(255, 255, 255, 0.90);
+
+      /* 2. Raised Buttons (Exact 6-layer composite from Figma plugin screenshots) */
+      /* Colors: #BEBEBE -> rgb(190, 190, 190), #FFFFFF -> rgb(255, 255, 255) */
+      --btn-raised:
+        inset 1px 1px 2px rgba(255, 255, 255, 0.30),
+        inset -1px -1px 2px rgba(190, 190, 190, 0.50),
+        4px 4px 10px rgba(190, 190, 190, 0.90),
+        -4px -4px 8px rgba(255, 255, 255, 0.90),
+        4px -4px 8px rgba(190, 190, 190, 0.20),
+        -4px 4px 8px rgba(190, 190, 190, 0.20);
+
+      /* Tactile Pressed state */
+      --btn-pressed:
+        inset 2px 2px 5px rgba(190, 190, 190, 0.75),
+        inset -2px -2px 5px rgba(255, 255, 255, 0.9),
+        0 1px 2px rgba(0, 0, 0, 0.05);
+
+      /* 3. Outer Card Drop Shadow */
+      --card-shadow: 
+        18px 24px 38px rgba(0, 0, 0, 0.16),
+        -12px -12px 28px rgba(255, 255, 255, 0.9);
+    }
+
+    /* Entire canvas strictly #EAEAEA without tints or gradients */
+    body {
+      background-color: var(--neu-base) !important;
+      color: var(--text-main);
+    }
+
+    /* Outer Card strictly #EAEAEA */
+    .neu-card {
+      background-color: var(--neu-base);
+      border-radius: 46px;
+      box-shadow: var(--card-shadow);
+    }
+
+    /* Inset Pill Inputs strictly #EAEAEA */
+    .neu-inset-pill {
+      background-color: var(--neu-base);
+      border-radius: 9999px;
+      box-shadow: var(--input-sunken);
+      transition: box-shadow 0.2s ease, transform 0.15s ease;
+    }
+
+    .neu-inset-pill:focus-within {
+      box-shadow: var(--input-sunken-focus);
+    }
+
+    .neu-input {
+      color: var(--text-main);
+      background: transparent;
+      outline: none;
+    }
+
+    .neu-input::placeholder {
+      color: var(--text-main);
+      opacity: 0.55;
+      font-weight: 400;
+    }
+
+    /* Raised Buttons strictly #EAEAEA */
+    .neu-btn {
+      background-color: var(--neu-base);
+      border-radius: 9999px;
+      color: var(--text-main);
+      box-shadow: var(--btn-raised);
+      transition: all 0.16s ease;
+    }
+
+    .neu-btn:hover {
+      filter: brightness(1.01);
+    }
+
+    .neu-btn:active {
+      transform: translateY(1px);
+      box-shadow: var(--btn-pressed);
+    }
+
+    /* Etched Divider line using #574C57 */
+    .etched-divider {
+      height: 1px;
+      background: rgba(87, 76, 87, 0.22);
+      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.85);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4 sm:p-8 select-none">
+
+  <!-- Neumorphic Main Card -->
+  <main class="neu-card w-full max-w-[420px] px-8 pt-12 pb-12 sm:px-10 flex flex-col items-center relative">
+    
+    <!-- Title -->
+    <h1 class="text-[34px] font-bold tracking-tight mb-8" style="color: var(--text-main);">
+      Sign Up
+    </h1>
+
+    <!-- Form Inputs -->
+    <form id="signupForm" onsubmit="handleSubmit(event)" class="w-full flex flex-col space-y-4">
+      
+      <!-- Full Name -->
+      <div class="neu-inset-pill w-full h-[52px] flex items-center px-6">
+        <input 
+          id="name" 
+          type="text" 
+          placeholder="Full Name" 
+          autocomplete="name"
+          required
+          class="neu-input w-full text-[15px] font-normal"
+        />
+      </div>
+
+      <!-- Username -->
+      <div class="neu-inset-pill w-full h-[52px] flex items-center px-6">
+        <input 
+          id="username" 
+          type="text" 
+          placeholder="Username" 
+          autocomplete="username"
+          required
+          class="neu-input w-full text-[15px] font-normal"
+        />
+      </div>
+
+      <!-- Email Address -->
+      <div class="neu-inset-pill w-full h-[52px] flex items-center px-6">
+        <input 
+          id="email" 
+          type="email" 
+          placeholder="Email Address" 
+          autocomplete="email"
+          required
+          class="neu-input w-full text-[15px] font-normal"
+        />
+      </div>
+
+      <!-- Password -->
+      <div class="neu-inset-pill w-full h-[52px] flex items-center px-6 relative">
+        <input 
+          id="password" 
+          type="password" 
+          placeholder="Password" 
+          autocomplete="new-password"
+          required
+          class="neu-input w-full text-[15px] font-normal pr-7"
+        />
+        <button 
+          type="button" 
+          onclick="toggleEye()" 
+          tabindex="-1"
+          aria-label="Toggle password visibility"
+          class="absolute right-5 text-[#574C57]/45 hover:text-[#574C57]/80 focus:outline-none transition-colors"
+        >
+          <svg id="eyeSvg" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Center Compact Sign Up Button -->
+      <div class="flex justify-center pt-2 pb-1">
+        <button 
+          type="submit" 
+          class="neu-btn px-9 py-2.5 text-[15px] font-semibold tracking-tight cursor-pointer focus:outline-none"
+        >
+          Sign Up
+        </button>
+      </div>
+
+    </form>
+
+    <!-- 'or' Divider -->
+    <div class="w-full flex items-center justify-center my-6 relative">
+      <div class="etched-divider w-full"></div>
+      <span 
+        class="absolute px-3 text-xs font-normal" 
+        style="background-color: var(--neu-base); color: var(--text-main); opacity: 0.75;"
+      >
+        or
+      </span>
+    </div>
+
+    <!-- Social Sign In Stack -->
+    <div class="w-full flex flex-col space-y-3.5">
+      
+      <!-- Google Button -->
+      <button 
+        type="button" 
+        onclick="triggerSocial('Google')"
+        class="neu-btn w-full h-[52px] flex items-center justify-center space-x-3 cursor-pointer focus:outline-none px-4"
+      >
+        <svg class="w-[18px] h-[18px] flex-shrink-0" viewBox="0 0 24 24">
+          <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/>
+          <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/>
+          <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/>
+          <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+        </svg>
+        <span class="text-[15px] font-medium tracking-tight" style="color: var(--text-main);">
+          Continue with Google
+        </span>
+      </button>
+
+      <!-- Facebook Button -->
+      <button 
+        type="button" 
+        onclick="triggerSocial('Facebook')"
+        class="neu-btn w-full h-[52px] flex items-center justify-center space-x-3 cursor-pointer focus:outline-none px-4"
+      >
+        <svg class="w-[18px] h-[18px] flex-shrink-0" fill="#1877F2" viewBox="0 0 24 24">
+          <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+        </svg>
+        <span class="text-[15px] font-medium tracking-tight" style="color: var(--text-main);">
+          Continue with Facebook
+        </span>
+      </button>
+
+    </div>
+
+  </main>
+
+  <!-- Toast Notification -->
+  <div 
+    id="toastBox" 
+    class="fixed bottom-6 left-1/2 -translate-x-1/2 px-6 py-2.5 rounded-full text-xs font-medium tracking-wide shadow-xl opacity-0 pointer-events-none transition-all duration-300 z-50 text-white"
+    style="background-color: var(--text-main);"
+  >
+    Notice
+  </div>
+
+  <script>
+    function toggleEye() {
+      const pwd = document.getElementById('password');
+      const svg = document.getElementById('eyeSvg');
+      const isPwd = pwd.type === 'password';
+      pwd.type = isPwd ? 'text' : 'password';
+
+      if (isPwd) {
+        svg.innerHTML = `
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
+        `;
+      } else {
+        svg.innerHTML = `
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+        `;
+      }
+    }
+
+    function handleSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      showToast(`Welcome, ${name || 'User'}!`);
+    }
+
+    function triggerSocial(provider) {
+      showToast(`Continue with ${provider}`);
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toastBox');
+      toast.textContent = msg;
+      toast.style.opacity = '1';
+      toast.style.transform = 'translate(-50%, -8px)';
+      clearTimeout(window.tTimer);
+      window.tTimer = setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translate(-50%, 0)';
+      }, 2000);
+    }
+  </script>
+</body>
+</html>

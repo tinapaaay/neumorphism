@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard</title>
+  
+  <!-- Font: Short Stack -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Short+Stack&display=swap" rel="stylesheet">
+  
+  <!-- Tone.js for tactile pop sound -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="figma-canvas">
+    <!-- Hello Tin, Everyday is a good day! -->
+    <div class="hello-tin">Hello <span>Tin</span>,</div>
+    <div class="everyday-sub">Everyday is a good day!</div>
+
+    <!-- Clock Widget -->
+    <div class="clock-card">
+      <div class="clock-display">
+        <span class="clock-time">11:25</span>
+      </div>
+      <div class="clock-day">Monday</div>
+      <div class="clock-date">2024/10/24</div>
+    </div>
+
+    <!-- Calendar Widget -->
+    <div class="calendar-card">
+      <div class="cal-title-num">24</div>
+      <div class="cal-title-text">Calendar</div>
+      
+      <div class="cal-week-bar">
+        <span>Mon</span><span>Tues</span><span>Wed</span><span>Thurs</span><span>Fri</span><span>Sat</span><span>Sun</span>
+      </div>
+
+      <div class="cal-dates-wrap">
+        <!-- Row 1 -->
+        <div></div><div></div><div class="cal-date">1</div><div class="cal-date">2</div><div class="cal-date">3</div><div class="cal-date">4</div><div></div>
+        <!-- Row 2 -->
+        <div class="cal-date">5</div><div class="cal-date">6</div><div class="cal-date">7</div><div class="cal-date">8</div><div class="cal-date">9</div><div class="cal-date">10</div><div class="cal-date">11</div>
+        <!-- Row 3 -->
+        <div class="cal-date">12</div><div class="cal-date">13</div><div class="cal-date">14</div><div class="cal-date">15</div><div class="cal-date">16</div><div class="cal-date">17</div><div class="cal-date">18</div>
+        <!-- Row 4 -->
+        <div class="cal-date">19</div><div class="cal-date">20</div><div class="cal-date">21</div><div class="cal-date">22</div><div class="cal-date">23</div>
+        <div class="cal-date active-day"><span>24</span></div>
+        <div class="cal-date">25</div>
+        <!-- Row 5 -->
+        <div class="cal-date">26</div><div class="cal-date">27</div><div class="cal-date">28</div><div class="cal-date">29</div><div class="cal-date">30</div><div class="cal-date">31</div><div></div>
+      </div>
+    </div>
+
+    <!-- To Do List Widget -->
+    <div class="todo-card">
+      <div class="todo-title">To do list:</div>
+      <div class="todo-tip">Tip: pop the buttons</div>
+
+      <div class="todo-items-list" id="todo-container">
+        <!-- Brush my teeth (Group 12) -->
+        <div class="todo-row done" onclick="toggleTask(this)">
+          <div class="pop-ball ball-style-a"></div>
+          <span class="todo-task-label">Brush my teeth</span>
+        </div>
+
+        <!-- Wash the dishes (Group 13) -->
+        <div class="todo-row" onclick="toggleTask(this)">
+          <div class="pop-ball ball-style-a"></div>
+          <span class="todo-task-label">Wash the dishes</span>
+        </div>
+
+        <!-- Assignment #1 (Group 14) -->
+        <div class="todo-row" onclick="toggleTask(this)">
+          <div class="pop-ball ball-style-a"></div>
+          <span class="todo-task-label">Assignment #1</span>
+        </div>
+
+        <!-- Laundry (Group 15) -->
+        <div class="todo-row" onclick="toggleTask(this)">
+          <div class="pop-ball ball-style-a"></div>
+          <span class="todo-task-label">Laundry</span>
+        </div>
+
+        <!-- Eat breakfast (Group 16) -->
+        <div class="todo-row" onclick="toggleTask(this)">
+          <div class="pop-ball ball-style-a"></div>
+          <span class="todo-task-label">Eat breakfast</span>
+        </div>
+
+        <!-- Drink Water (Group 17) -->
+        <div class="todo-row" onclick="toggleTask(this)">
+          <div class="pop-ball ball-style-a"></div>
+          <span class="todo-task-label">Drink Water</span>
+        </div>
+
+        <!-- Add new task (Group 18) -->
+        <div class="todo-row" onclick="addNewTask()">
+          <span class="add-task-plus">+</span>
+          <span class="todo-task-label">Add new task</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom widgets -->
+    <section class="summary-card time-remaining-card" aria-label="Time remaining today">
+      <div class="summary-title time-remaining-title">Time remaining<br>today</div>
+      <div class="summary-detail time-remaining-detail"></div>
+      <div class="summary-fill time-remaining-fill" role="progressbar" aria-label="Day remaining" aria-valuemin="0" aria-valuemax="100"></div>
+      <div class="summary-value time-remaining-value"></div>
+    </section>
+
+    <section class="summary-card water-intake-card" aria-label="Water intake">
+      <div class="summary-title water-intake-title">Water intake</div>
+      <div class="summary-detail water-intake-detail" aria-live="polite"></div>
+      <div class="water-controls">
+        <button type="button" id="water-minus" aria-label="Remove 250 milliliters" title="Remove 250 mL">−</button>
+        <button type="button" id="water-plus" aria-label="Add 250 milliliters" title="Add 250 mL">+</button>
+      </div>
+      <div class="summary-fill water-intake-fill" role="progressbar" aria-label="Water intake goal" aria-valuemin="0" aria-valuemax="100"></div>
+      <div class="summary-value water-intake-value"></div>
+    </section>
+
+    <section class="summary-card notes-card" aria-label="Notes">
+      <label class="notes-title" for="notes-input">Notes</label>
+      <div class="notes-paper">
+        <textarea id="notes-input" class="notes-input" aria-label="Write your notes" placeholder="Write something…" spellcheck="false"></textarea>
+      </div>
+    </section>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

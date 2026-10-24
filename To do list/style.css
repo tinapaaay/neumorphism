@@ -1,0 +1,579 @@
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    body {
+      min-height: 100vh;
+      background: #F5EFEB;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Short Stack', cursive, sans-serif;
+      padding: 40px 20px;
+    }
+
+    /* Relative Stage calculated from Figma absolute bounds (X: 650 to 1190, Y: 202 to 645) */
+    .figma-canvas {
+      position: relative;
+      width: 540px;
+      height: 639px;
+    }
+
+    /* ==========================================================================
+       GREETING SECTION
+       ========================================================================== */
+    .hello-tin {
+      position: absolute;
+      width: 136px;
+      height: 33px;
+      left: 5px;
+      top: 0px;
+      font-family: 'Short Stack';
+      font-style: normal;
+      font-weight: 400;
+      font-size: 27px;
+      line-height: 33px;
+      color: rgba(0, 0, 0, 0.6);
+    }
+
+    .hello-tin span {
+      font-weight: bold;
+      color: rgba(0, 0, 0, 0.75);
+    }
+
+    .everyday-sub {
+      position: absolute;
+      width: 228px;
+      height: 21px;
+      left: 5px;
+      top: 38px;
+      font-family: 'Short Stack';
+      font-style: normal;
+      font-weight: 400;
+      font-size: 17px;
+      line-height: 21px;
+      color: rgba(0, 0, 0, 0.6);
+    }
+
+    /* ==========================================================================
+       CLOCK (Group 11 / Rectangle 9 & 10)
+       ========================================================================== */
+    .clock-card {
+      position: absolute;
+      width: 233px;
+      height: 103px;
+      left: 2px;
+      top: 94px;
+      background: #F5EFEB;
+      box-shadow: 
+        3px -3px 6px rgba(233, 227, 223, 0.2), 
+        -3px 3px 6px rgba(233, 227, 223, 0.2), 
+        3px 3px 6px rgba(255, 251, 247, 0.9), 
+        -3px -3px 8px rgba(233, 227, 223, 0.9), 
+        inset -1px -1px 2px rgba(255, 251, 247, 0.3), 
+        inset 1px 1px 2px rgba(233, 227, 223, 0.5);
+      border-radius: 28px;
+    }
+
+    .clock-display {
+      position: absolute;
+      width: 90px;
+      height: 48px;
+      left: 30px;
+      top: 28px;
+      background: #B1A384;
+      box-shadow: 
+        1px 1px 2px rgba(112, 103, 83, 0.2), 
+        -1px -1px 2px rgba(112, 103, 83, 0.2), 
+        1px -1px 2px rgba(242, 223, 181, 0.9), 
+        -1px 1px 3px rgba(112, 103, 83, 0.9), 
+        inset -1px 1px 2px rgba(242, 223, 181, 0.3), 
+        inset 1px -1px 2px rgba(112, 103, 83, 0.5);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .clock-time {
+      font-family: 'Short Stack';
+      font-style: normal;
+      font-weight: 400;
+      font-size: 29px;
+      line-height: 36px;
+      color: rgba(0, 0, 0, 0.6);
+      letter-spacing: 0.5px;
+    }
+
+    .clock-day {
+      position: absolute;
+      width: 64px;
+      height: 18px;
+      left: 148px;
+      top: 34px;
+      font-family: 'Short Stack';
+      font-style: normal;
+      font-weight: 400;
+      font-size: 15px;
+      line-height: 18px;
+      color: rgba(0, 0, 0, 0.8);
+    }
+
+    .clock-date {
+      position: absolute;
+      width: 60px;
+      height: 12px;
+      left: 150px;
+      top: 58px;
+      font-family: 'Short Stack';
+      font-style: normal;
+      font-weight: 400;
+      font-size: 10px;
+      line-height: 12px;
+      color: rgba(0, 0, 0, 0.6);
+    }
+
+    /* ==========================================================================
+       CALENDAR (Group 10 / Rectangle 7 & 8)
+       ========================================================================== */
+    .calendar-card {
+      position: absolute;
+      width: 233px;
+      height: 211px;
+      left: 0px;
+      top: 232px;
+      background: #F5EFEB;
+      box-shadow: 
+        3px -3px 6px rgba(233, 227, 223, 0.2), 
+        -3px 3px 6px rgba(233, 227, 223, 0.2), 
+        3px 3px 6px rgba(255, 251, 247, 0.9), 
+        -3px -3px 8px rgba(233, 227, 223, 0.9), 
+        inset -1px -1px 2px rgba(255, 251, 247, 0.3), 
+        inset 1px 1px 2px rgba(233, 227, 223, 0.5);
+      border-radius: 48px;
+    }
+
+    .cal-title-num {
+      position: absolute;
+      width: 19px;
+      height: 18px;
+      left: 29px;
+      top: 22px;
+      font-family: 'Short Stack';
+      font-style: normal;
+      font-weight: 400;
+      font-size: 15px;
+      line-height: 18px;
+      color: rgba(0, 0, 0, 0.6);
+    }
+
+    .cal-title-text {
+      position: absolute;
+      width: 78px;
+      height: 18px;
+      left: 129px;
+      top: 22px;
+      font-family: 'Short Stack';
+      font-style: normal;
+      font-weight: 400;
+      font-size: 15px;
+      line-height: 18px;
+      color: rgba(0, 0, 0, 0.6);
+    }
+
+    /* Weekday Bar (Rectangle 8) */
+    .cal-week-bar {
+      position: absolute;
+      width: 191px;
+      height: 22px;
+      left: 23px;
+      top: 50px;
+      background: linear-gradient(135deg, #E9E3DF 0%, #FFFBF7 100%);
+      box-shadow: 
+        -1px 1px 2px rgba(232, 227, 223, 0.2), 
+        1px -1px 2px rgba(232, 227, 223, 0.2), 
+        -1px -1px 2px rgba(255, 251, 247, 0.9), 
+        1px 1px 3px rgba(232, 227, 223, 0.9), 
+        inset 1px 1px 2px rgba(255, 251, 247, 0.3), 
+        inset -1px -1px 2px rgba(232, 227, 223, 0.5);
+      border-radius: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      padding: 0 4px;
+    }
+
+    .cal-week-bar span {
+      font-family: 'Short Stack';
+      font-style: normal;
+      font-weight: 400;
+      font-size: 8px;
+      line-height: 10px;
+      color: rgba(165, 136, 105, 0.84);
+    }
+
+    /* Dates Grid (Rows derived from your Y coordinates: 515, 540, 565, 590, 615) */
+    .cal-dates-wrap {
+      position: absolute;
+      left: 23px;
+      top: 81px;
+      width: 191px;
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      row-gap: 15px;
+      text-align: center;
+    }
+
+    .cal-date {
+      font-family: 'Short Stack';
+      font-style: normal;
+      font-weight: 400;
+      font-size: 8px;
+      line-height: 10px;
+      color: rgba(0, 0, 0, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    /* Ellipse 12 (Active day badge for 24) */
+    .cal-date.active-day::before {
+      content: '';
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      background: #B1A384;
+      border-radius: 50%;
+      z-index: 1;
+    }
+
+    .cal-date.active-day span {
+      position: relative;
+      z-index: 2;
+      color: rgba(0, 0, 0, 0.7);
+    }
+
+    /* ==========================================================================
+       TO DO LIST (Rectangle 11)
+       ========================================================================== */
+    .todo-card {
+      position: absolute;
+      width: 285px;
+      height: 349px;
+      left: 254px;
+      top: 94px;
+      background: #F5EFEB;
+      box-shadow: 
+        3px -3px 6px rgba(233, 227, 223, 0.2), 
+        -3px 3px 6px rgba(233, 227, 223, 0.2), 
+        3px 3px 6px rgba(255, 251, 247, 0.9), 
+        -3px -3px 8px rgba(233, 227, 223, 0.9), 
+        inset -1px -1px 2px rgba(255, 251, 247, 0.3), 
+        inset 1px 1px 2px rgba(233, 227, 223, 0.5);
+      border-radius: 28px;
+    }
+
+    .todo-title {
+      position: absolute;
+      width: 84px;
+      height: 18px;
+      left: 39px;
+      top: 25px;
+      font-family: 'Short Stack';
+      font-style: normal;
+      font-weight: 400;
+      font-size: 15px;
+      line-height: 18px;
+      color: rgba(0, 0, 0, 0.8);
+    }
+
+    .todo-tip {
+      position: absolute;
+      width: 69px;
+      height: 7px;
+      left: 192px;
+      top: 32px;
+      font-family: 'Short Stack';
+      font-style: normal;
+      font-weight: 400;
+      font-size: 6px;
+      line-height: 7px;
+      color: rgba(0, 0, 0, 0.6);
+    }
+
+    /* List Container */
+    .todo-items-list {
+      position: absolute;
+      left: 39px;
+      top: 61px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* Pill Grooves (Rectangle 9, 12, 13, 14, 15, 16, 17) */
+    .todo-row {
+      width: 222px;
+      height: 22px;
+      background: linear-gradient(135deg, #FFFBF7 100%, #E9E3DF 0%);
+      box-shadow: 
+        -1px 1px 2px rgba(232, 227, 223, 0.2), 
+        1px -1px 2px rgba(232, 227, 223, 0.2), 
+        -1px -1px 2px rgba(255, 251, 247, 0.9), 
+        1px 1px 3px rgba(232, 227, 223, 0.9), 
+        inset 1px 1px 2px rgba(255, 251, 247, 0.3), 
+        inset -1px -1px 2px rgba(232, 227, 223, 0.5);
+      border-radius: 48px;
+      display: flex;
+      align-items: center;
+      padding: 0 11px;
+      cursor: pointer;
+      border: none;
+      text-align: left;
+    }
+
+    /* Darker gradient for completed tasks */
+    .todo-row.done {
+      background: linear-gradient(135deg, #E9E3DF 0%, #FFFBF7 100%);
+    }
+
+    /* Ellipse Buttons (#E1CFA4 / #D9C79E) */
+    .pop-ball {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 9px;
+      flex-shrink: 0;
+      transition: transform 0.12s ease;
+    }
+
+    /* Ellipse 13, 15, 16, 18 */
+    .ball-style-a {
+      background: #E1CFA4;
+      box-shadow: 
+        74px 74px 148px rgba(71, 65, 53, 0.2), 
+        -74px -74px 148px rgba(71, 65, 53, 0.2), 
+        74px -74px 148px rgba(255, 255, 211, 0.9), 
+        -74px 74px 185px rgba(71, 65, 53, 0.9), 
+        inset -3px 3px 2px rgba(255, 255, 211, 0.3), 
+        inset 3px -3px 2px rgba(71, 65, 53, 0.5);
+    }
+
+    /* Ellipse 14, 17 */
+    .ball-style-b {
+      background: #D9C79E;
+      box-shadow: 
+        17px -17px 34px rgba(90, 83, 66, 0.2), 
+        -17px 17px 34px rgba(90, 83, 66, 0.2), 
+        17px 17px 34px rgba(255, 255, 255, 0.9), 
+        -17px -17px 43px rgba(90, 83, 66, 0.9), 
+        inset -1px -1px 2px rgba(255, 255, 255, 0.3), 
+        inset 1px 1px 2px rgba(90, 83, 66, 0.5);
+    }
+
+    /* Pressed / Popped state */
+    .todo-row.done .pop-ball {
+      transform: scale(0.8);
+      filter: brightness(0.92);
+      box-shadow: inset 1px 1px 2px rgba(71, 65, 53, 0.6);
+    }
+
+    .todo-task-label {
+      font-family: 'Short Stack';
+      font-style: normal;
+      font-weight: 400;
+      font-size: 7px;
+      line-height: 9px;
+      color: rgba(0, 0, 0, 0.6);
+      transition: all 0.15s ease;
+    }
+
+    .todo-row.done .todo-task-label {
+      position: relative;
+      color: rgba(0, 0, 0, 0.35);
+    }
+
+    .todo-row.done .todo-task-label::after {
+      content: '';
+      position: absolute;
+      width: 69.01px;
+      height: 0;
+      left: 0;
+      top: 50%;
+      border-top: 1px solid rgba(100, 98, 96, 0.8);
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+
+    /* Plus symbol for Add Task */
+    .add-task-plus {
+      font-family: 'Short Stack';
+      font-size: 7px;
+      line-height: 9px;
+      color: rgba(0, 0, 0, 0.6);
+      margin-left: 2px;
+      margin-right: 12px;
+    }
+
+    /* Bottom widgets: Figma origin (650, 202). */
+    .summary-card {
+      position: absolute;
+      top: 477px;
+      height: 162px;
+      background: #F5EFEB;
+      box-shadow:
+        3px -3px 6px rgba(233, 227, 223, 0.2),
+        -3px 3px 6px rgba(233, 227, 223, 0.2),
+        3px 3px 6px rgba(255, 251, 247, 0.9),
+        -3px -3px 8px rgba(233, 227, 223, 0.9),
+        inset -1px -1px 2px rgba(255, 251, 247, 0.3),
+        inset 1px 1px 2px rgba(233, 227, 223, 0.5);
+      border-radius: 28px;
+    }
+
+    .time-remaining-card { left: 0; width: 101px; }
+    .water-intake-card { left: 132px; width: 101px; }
+    .notes-card { left: 254px; width: 285px; }
+
+    .summary-title,
+    .summary-value {
+      position: absolute;
+      font-size: 8px;
+      font-weight: 400;
+      line-height: 10px;
+      text-align: center;
+      color: rgba(0, 0, 0, 0.6);
+    }
+
+    .summary-title { top: 19px; }
+    .time-remaining-title { left: 17px; width: 72px; height: 20px; }
+    .water-intake-title { left: 24px; width: 59px; height: 10px; }
+
+    .summary-fill {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 101px;
+      border-radius: 16px;
+      box-shadow:
+        3px -3px 6px rgba(233, 227, 223, 0.2),
+        -3px 3px 6px rgba(233, 227, 223, 0.2),
+        3px 3px 6px rgba(255, 251, 247, 0.9),
+        -3px -3px 8px rgba(233, 227, 223, 0.9),
+        inset -1px -1px 2px rgba(255, 251, 247, 0.3),
+        inset 1px 1px 2px rgba(233, 227, 223, 0.5);
+    }
+
+    .time-remaining-fill { height: 87px; background: rgba(177, 163, 133, 0.8); }
+    .water-intake-fill { height: 59px; background: rgba(133, 166, 177, 0.8); }
+    .summary-value { top: 141px; height: 10px; }
+    .time-remaining-value { left: 44px; width: 18px; }
+    .water-intake-value { left: 44px; width: 19px; }
+
+    .notes-title {
+      position: absolute;
+      left: 25px;
+      top: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 15px;
+      font-weight: 400;
+      line-height: 18px;
+      color: rgba(0, 0, 0, 0.7);
+    }
+
+    .notes-title::before {
+      content: '';
+      width: 4px;
+      height: 12px;
+      border-radius: 3px;
+      background: #B1A384;
+    }
+
+    .notes-paper {
+      position: absolute;
+      left: 23px;
+      top: 45px;
+      width: 239px;
+      height: 101px;
+      background: #F5EFEB;
+      box-shadow:
+        inset 2px 2px 5px rgba(193, 182, 172, 0.3),
+        inset -2px -2px 5px rgba(255, 251, 247, 0.9);
+      border-radius: 16px;
+    }
+
+    .notes-input {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      padding: 13px 15px;
+      border: none;
+      border-radius: 16px;
+      background: transparent;
+      resize: none;
+      font-family: inherit;
+      font-size: 9px;
+      line-height: 16px;
+      color: rgba(0, 0, 0, 0.6);
+      user-select: text;
+      -webkit-user-select: text;
+    }
+
+    .notes-input::placeholder {
+      color: rgba(100, 98, 96, 0.45);
+    }
+
+    .notes-input:focus-visible {
+      outline: 1px solid rgba(177, 163, 132, 0.65);
+      outline-offset: 2px;
+    }
+
+    /* Live summary widgets */
+    .summary-detail {
+      position: absolute;
+      left: 0;
+      width: 101px;
+      font-size: 7px;
+      line-height: 10px;
+      text-align: center;
+      color: rgba(0, 0, 0, 0.5);
+      z-index: 1;
+    }
+    .time-remaining-detail { top: 46px; }
+    .water-intake-detail { top: 33px; }
+    .time-remaining-value,
+    .water-intake-value { left: 0; width: 101px; }
+    .summary-fill { transition: height 0.3s ease; }
+    .water-controls {
+      position: absolute;
+      top: 48px;
+      left: 22px;
+      display: flex;
+      gap: 9px;
+      z-index: 1;
+    }
+    .water-controls button {
+      width: 24px;
+      height: 22px;
+      border: 0;
+      border-radius: 8px;
+      background: #F5EFEB;
+      box-shadow: 2px 2px 4px rgba(193, 182, 172, 0.35), -2px -2px 4px #FFFBF7;
+      color: rgba(0, 0, 0, 0.6);
+      font: 13px 'Short Stack', sans-serif;
+      cursor: pointer;
+    }
+    .water-controls button:active {
+      box-shadow: inset 1px 1px 3px rgba(193, 182, 172, 0.5);
+    }
+    .water-controls button:disabled { opacity: 0.35; cursor: default; }
+    .water-controls button:focus-visible { outline: 1px solid #85A6B1; outline-offset: 2px; }
