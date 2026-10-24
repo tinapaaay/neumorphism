@@ -20,6 +20,75 @@
 </head>
 <body>
 
+  <div class="pomodoro-layout">
+    <div class="sidebar-shell" id="sidebarShell">
+      <button type="button" class="sidebar-toggle" id="sidebarToggle" aria-label="Show goals and calendar" aria-controls="sidebarPanel" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    <aside class="sidebar-panel" id="sidebarPanel" aria-label="Goals and calendar" aria-hidden="true" inert>
+
+      <!-- Quote Block -->
+      <div class="quote-box">
+        <div class="quote-bar"></div>
+        <div class="quote-text">
+          Where attention goes,<br>energy flows.
+        </div>
+      </div>
+
+      <section class="sidebar-widget movable-widget profile-card" id="profileWidget" data-widget-name="Profile" aria-label="Your profile">
+        <div class="widget-header profile-drag-bar">
+          <button type="button" class="widget-title widget-drag-handle" aria-label="Move Profile card" aria-describedby="widgetMoveHint" title="Drag profile card"><span class="widget-grip" aria-hidden="true">⠿</span></button>
+          <button type="button" class="widget-return" aria-label="Return Profile to sidebar" title="Return to sidebar">↶</button>
+        </div>
+        <button type="button" class="avatar-wrapper avatar-upload-button" id="avatarUploadButton" aria-label="Add or change profile photo" title="Click to add a picture">
+          <svg class="avatar-svg" id="profilePlaceholder" viewBox="0 0 100 100" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+            <rect width="100" height="100" rx="20" fill="#e4edf3"/>
+            <circle cx="19" cy="20" r="8" fill="#5882A0"/>
+            <path d="M2 65C13 47 23 46 35 57C45 66 51 60 58 43C66 23 76 27 89 54C93 62 98 58 98 66V86Q98 96 86 97Q50 102 15 96Q2 94 2 65Z" fill="#5882A0"/>
+          </svg>
+          <img id="profilePhoto" class="profile-photo" alt="Profile photo" hidden>
+          <span class="avatar-upload-overlay" aria-hidden="true">Change photo</span>
+        </button>
+        <div class="profile-info">
+          <h2 class="user-name" id="profileName">Christine Joy Espiritu</h2>
+          <p class="user-role" id="profileRole">Computer Science Student</p>
+          <span class="user-joined" id="profileJoined">joined since 2026</span>
+          <button class="btn-edit-profile" type="button" id="editProfileButton">Edit Profile</button>
+          <span class="user-focus" id="profileFocus">Total Focused: 0 min</span>
+          <span id="avatarUploadStatus" class="avatar-upload-status" role="status" hidden></span>
+        </div>
+      </section>
+
+      <!-- Goal for today Widget -->
+      <div class="sidebar-widget movable-widget" id="goalWidget" data-widget-name="Goal">
+        <div class="widget-header">
+          <button type="button" class="widget-title widget-drag-handle" aria-label="Move Goal card" aria-describedby="widgetMoveHint" title="Drag to place on screen">Goal for today:<span class="widget-grip" aria-hidden="true">⠿</span></button>
+          <button type="button" class="widget-return" aria-label="Return Goal to sidebar" title="Return to sidebar">↶</button>
+        </div>
+        <div class="goal-beads-row" id="goalBeadsContainer" role="group" aria-label="Daily focus sessions"></div>
+      </div>
+
+      <!-- October Calendar Widget -->
+      <div class="sidebar-widget movable-widget" id="calendarWidget" data-widget-name="Calendar">
+        <div class="widget-header">
+          <button type="button" class="widget-title widget-drag-handle" aria-label="Move Calendar card" aria-describedby="widgetMoveHint" title="Drag to place on screen"><span id="calendarMonthLabel">Calendar</span><span class="widget-grip" aria-hidden="true">⠿</span></button>
+          <button type="button" class="widget-return" aria-label="Return Calendar to sidebar" title="Return to sidebar">↶</button>
+        </div>
+
+        <div class="calendar-navigation">
+          <button type="button" id="calendarPrevious" aria-label="Previous month">‹</button>
+          <button type="button" id="calendarToday">Today</button>
+          <button type="button" id="calendarNext" aria-label="Next month">›</button>
+        </div>
+        <div class="cal-weekdays" aria-hidden="true">
+          <span>Mon</span><span>Tues</span><span>Wed</span><span>Thurs</span><span>Fri</span><span>Sat</span><span>Sun</span>
+        </div>
+        <div class="cal-grid" id="calendarDays" aria-label="Focus history calendar"></div>
+      </div>
+
+    </aside>
+    </div>
+    <main class="pomodoro-main" aria-label="Pomodoro timer">
   <!-- Centered Interactive Stage -->
   <div class="stage-wrapper relative flex flex-col items-center">
 
@@ -32,9 +101,9 @@
       <div class="socket-well">
 
         <!-- Central Tactile Push Button / Display -->
-        <button 
-          type="button" 
-          id="timerButton" 
+        <button
+          type="button"
+          id="timerButton"
           class="push-button-dial"
           onclick="handleDialPress()"
           aria-label="Toggle Pomodoro Timer"
@@ -67,8 +136,46 @@
       <button class="pill-btn" id="muteToggle" onclick="toggleAudio()" title="Toggle Sound">🔊</button>
     </div>
 
+
   </div>
 
+    </main>
+  </div>
+
+  <p id="widgetMoveHint" class="widget-move-hint">Drag the title to move this card. Or press Enter to place it on screen, then use arrow keys to move it. Hold Shift for larger steps. Press Escape to return it to the sidebar.</p>
+  <input type="file" id="avatarUploadInput" accept="image/png,image/jpeg,image/webp" hidden>
+
+  <dialog id="profileDialog" class="profile-dialog" aria-labelledby="profileDialogTitle">
+    <form id="profileForm">
+      <h2 id="profileDialogTitle">Your profile</h2>
+      <p class="profile-save-note">Saved on this browser.</p>
+      <label for="profileNameInput">Display name</label>
+      <input id="profileNameInput" type="text" maxlength="50" required autocomplete="nickname">
+      <label for="profileRoleInput">About you</label>
+      <input id="profileRoleInput" type="text" maxlength="70" placeholder="e.g. Computer Science Student">
+      <label for="dailyGoalInput">Daily focus goal</label>
+      <input id="dailyGoalInput" type="number" min="1" max="99" step="1" required inputmode="numeric" aria-describedby="dailyGoalHint">
+      <p id="dailyGoalHint" class="profile-save-note">Focus sessions per day (1–99). Each completed Pomodoro fills one bead.</p>
+      <label for="profilePhotoInput">Profile photo</label>
+      <input id="profilePhotoInput" type="file" accept="image/png,image/jpeg,image/webp">
+      <p class="profile-save-note">PNG, JPG or WebP · up to 2 MB</p>
+      <button type="button" class="profile-text-button" id="removeProfilePhoto">Use default avatar</button>
+      <p id="profileFormStatus" role="status" class="profile-form-status"></p>
+      <div class="profile-form-actions">
+        <button type="button" id="cancelProfile" class="profile-text-button">Cancel</button>
+        <button type="submit" id="saveProfileButton" class="btn-edit-profile">Save profile</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="historyPopup" class="history-popup" role="tooltip" hidden>
+    <p id="historyPopupDate" class="history-popup-date"></p>
+    <div id="historyPopupBeads" class="history-popup-beads" aria-hidden="true" hidden></div>
+    <p id="historyPopupSessions" class="history-popup-sessions"></p>
+    <p id="historyPopupDuration" class="history-popup-duration"></p>
+  </div>
+
+  <p id="persistenceStatus" class="persistence-note" role="status" hidden></p>
   <script src="script.js"></script>
 </body>
 </html>
