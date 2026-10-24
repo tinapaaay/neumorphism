@@ -27,6 +27,8 @@
       </button>
     <aside class="sidebar-panel" id="sidebarPanel" aria-label="Goals and calendar" aria-hidden="true" inert>
 
+      <button type="button" id="resetLayoutButton" class="pill-btn reset-layout-button">Reset layout</button>
+      <p id="layoutResetStatus" class="sr-only" role="status"></p>
       <!-- Quote Block -->
       <div class="quote-box">
         <div class="quote-bar"></div>
@@ -67,6 +69,34 @@
         </div>
         <div class="goal-beads-row" id="goalBeadsContainer" role="group" aria-label="Daily focus sessions"></div>
       </div>
+
+      <section class="sidebar-widget movable-widget weekly-stats" id="weeklyStatsWidget" data-widget-name="Weekly stats" aria-label="Weekly focus statistics">
+        <div class="widget-header">
+          <button type="button" class="widget-title widget-drag-handle" aria-label="Move Weekly stats card" aria-describedby="widgetMoveHint" title="Drag to place on screen">Weekly stats<span class="widget-grip" aria-hidden="true">⠿</span></button>
+          <button type="button" class="widget-return" aria-label="Return Weekly stats to sidebar" title="Return to sidebar">↶</button>
+        </div>
+        <p id="weeklyStatsRange" class="weekly-stats-range"></p>
+        <dl class="weekly-stats-grid">
+          <div><dt>Focus time</dt><dd id="weeklyFocusTime">0h 0m</dd></div>
+          <div><dt>Sessions</dt><dd id="weeklySessions">0</dd></div>
+          <div><dt>Daily streak</dt><dd id="weeklyStreak">0 days</dd></div>
+        </dl>
+      </section>
+
+      <section class="sidebar-widget movable-widget ambient-card" id="ambientWidget" data-widget-name="Ambient sounds" aria-label="Ambient sounds">
+        <div class="widget-header">
+          <button type="button" class="widget-title widget-drag-handle" aria-label="Move Ambient sounds card" aria-describedby="widgetMoveHint" title="Drag to place on screen">Ambient sounds<span class="widget-grip" aria-hidden="true">⠿</span></button>
+          <button type="button" class="widget-return" aria-label="Return Ambient sounds to sidebar" title="Return to sidebar">↶</button>
+        </div>
+        <label for="ambientSoundSelect" class="ambient-label">Soundscape</label>
+        <div class="ambient-play-row">
+          <select id="ambientSoundSelect"><option value="rain">Rain</option><option value="cafe">Café</option><option value="white">White noise</option></select>
+          <button type="button" id="ambientPlayButton" class="pill-btn" aria-pressed="false">Play</button>
+        </div>
+        <label for="ambientVolume" class="ambient-label ambient-volume-label">Volume <output id="ambientVolumeValue" for="ambientVolume">35%</output></label>
+        <input id="ambientVolume" type="range" min="0" max="100" value="35" aria-label="Ambient volume">
+        <p id="ambientStatus" class="ambient-status" role="status">Choose a sound to settle in.</p>
+      </section>
 
       <!-- October Calendar Widget -->
       <div class="sidebar-widget movable-widget" id="calendarWidget" data-widget-name="Calendar">
@@ -128,10 +158,16 @@
       <p class="break-message" id="breakMessage" aria-hidden="true">Take a break</p>
     </div>
 
+    <div class="current-task" id="currentTaskArea">
+      <label for="currentTaskInput">What are you focusing on?</label>
+      <input id="currentTaskInput" type="text" maxlength="120" placeholder="e.g. Finish my assignment" autocomplete="off">
+    </div>
+
     <!-- Discreet Mode Presets & Controls -->
     <div class="minimal-controls mt-7 flex items-center space-x-2">
-      <button class="pill-btn active" id="modePomodoro" onclick="setMode(25, this)">25m</button>
-      <button class="pill-btn" id="modeShortBreak" onclick="setMode(5, this)" hidden>Short break · 5m</button>
+      <button class="pill-btn active" id="modePomodoro" onclick="setMode('pomodoro')">25m</button>
+      <button class="pill-btn" id="modeShortBreak" onclick="setMode(currentMode)" hidden>Short break · 5m</button>
+      <button class="pill-btn" id="skipBreakButton" onclick="skipBreak()" hidden>Skip break</button>
       <button class="pill-btn" onclick="resetTimer()" title="Reset Timer">Reset</button>
       <button class="pill-btn" id="muteToggle" onclick="toggleAudio()" title="Toggle Sound">🔊</button>
     </div>
@@ -156,6 +192,21 @@
       <label for="dailyGoalInput">Daily focus goal</label>
       <input id="dailyGoalInput" type="number" min="1" max="99" step="1" required inputmode="numeric" aria-describedby="dailyGoalHint">
       <p id="dailyGoalHint" class="profile-save-note">Focus sessions per day (1–99). Each completed Pomodoro fills one bead.</p>
+      <fieldset class="timer-duration-settings">
+        <legend>Timer durations</legend>
+        <div class="timer-duration-grid">
+          <div><label for="focusMinutesInput">Focus</label><input id="focusMinutesInput" type="number" min="1" max="180" step="1" required inputmode="numeric"></div>
+          <div><label for="shortBreakMinutesInput">Short break</label><input id="shortBreakMinutesInput" type="number" min="1" max="180" step="1" required inputmode="numeric"></div>
+          <div><label for="longBreakMinutesInput">Long break</label><input id="longBreakMinutesInput" type="number" min="1" max="180" step="1" required inputmode="numeric"></div>
+        </div>
+        <p class="profile-save-note">Minutes (1–180). Every 4 completed focus sessions switches to a long break automatically.</p>
+        <p class="profile-save-note">Running or paused sessions keep their current duration. New settings apply to the next session.</p>
+      </fieldset>
+      <label class="profile-task-option" for="showCurrentTaskInput">
+        <span>Show “What are you focusing on?”</span>
+        <input id="showCurrentTaskInput" type="checkbox" role="switch" aria-describedby="currentTaskSettingHint">
+      </label>
+      <p id="currentTaskSettingHint" class="profile-save-note">Add a task beneath the timer and include it in session history.</p>
       <label for="profilePhotoInput">Profile photo</label>
       <input id="profilePhotoInput" type="file" accept="image/png,image/jpeg,image/webp">
       <p class="profile-save-note">PNG, JPG or WebP · up to 2 MB</p>
@@ -173,9 +224,11 @@
     <div id="historyPopupBeads" class="history-popup-beads" aria-hidden="true" hidden></div>
     <p id="historyPopupSessions" class="history-popup-sessions"></p>
     <p id="historyPopupDuration" class="history-popup-duration"></p>
+    <ul id="historyPopupTasks" class="history-popup-tasks" hidden></ul>
   </div>
 
   <p id="persistenceStatus" class="persistence-note" role="status" hidden></p>
   <script src="script.js"></script>
+  <script src="ambient.js"></script>
 </body>
 </html>
