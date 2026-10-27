@@ -1,0 +1,12 @@
+{
+  "name": "neumorphic-pomodoro",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local-first Pomodoro timer, tasks, and progress history",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "test": "node scripts/test.mjs",
+    "check": "node scripts/check.mjs && npm test && npm run build",
+    "build": "node scripts/build.mjs"
+  }
+}

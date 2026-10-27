@@ -5,8 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Neumorphic Pomodoro Timer</title>
 
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="description" content="A local-first Pomodoro timer with customizable focus sessions, task planning, and progress history." />
+    <meta name="theme-color" content="#dce5ec" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Neumorphic Pomodoro Timer" />
+    <meta property="og:description" content="Plan your tasks, settle into focus, and track your progress." />
+    <meta name="twitter:card" content="summary" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="site.webmanifest" />
+    <link rel="stylesheet" href="base.css" />
 
     <!-- Google Fonts: Short Stack for the hand-drawn note, Inter for clean numbers -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -17,11 +24,19 @@
     />
 
     <!-- Tone.js for tactile acoustic pops and gentle bell alerts -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
 
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
+    <section id="tabGuard" class="tab-guard" aria-labelledby="tabGuardTitle">
+      <h1 id="tabGuardTitle">Opening your timer…</h1>
+      <p id="tabGuardMessage" role="status">Checking for another open Pomodoro tab.</p>
+      <button id="tabGuardRetry" class="pill-btn" type="button" hidden>Try again</button>
+      <button id="tabGuardRecovery" class="pill-btn" type="button" hidden>Download recovery copy</button>
+    </section>
+    <noscript>Enable JavaScript to use the Pomodoro timer.</noscript>
+    <div id="pomodoroApp" hidden inert>
     <div class="pomodoro-layout">
       <div class="sidebar-shell" id="sidebarShell">
         <button
@@ -219,6 +234,103 @@
           </section>
 
           <section
+            class="sidebar-widget movable-widget task-queue-card"
+            id="taskQueueWidget"
+            data-widget-name="Task queue"
+            aria-label="Task queue"
+          >
+            <div class="widget-header">
+              <button
+                type="button"
+                class="widget-title widget-drag-handle"
+                aria-label="Move Task queue card"
+                aria-describedby="widgetMoveHint"
+                title="Drag to place on screen"
+              >
+                Task queue<span class="widget-grip" aria-hidden="true">⠿</span>
+              </button>
+              <button
+                type="button"
+                class="widget-return"
+                aria-label="Return Task queue to sidebar"
+                title="Return to sidebar"
+              >
+                ↶
+              </button>
+            </div>
+            <form id="addQueueTaskForm" class="task-queue-form">
+              <label for="queueTaskInput" class="sr-only">New task</label>
+              <input
+                id="queueTaskInput"
+                type="text"
+                maxlength="120"
+                required
+                placeholder="What needs doing?"
+                autocomplete="off"
+              />
+              <button type="submit" class="pill-btn">Add</button>
+            </form>
+            <label for="queueTaskTarget" class="task-target-label"
+              >Daily target
+              <input
+                id="queueTaskTarget"
+                type="number"
+                min="1"
+                max="99"
+                value="1"
+                form="addQueueTaskForm"
+                required
+              />
+              focus sessions
+            </label>
+            <button
+              id="undoQueueDelete"
+              type="button"
+              class="profile-text-button"
+              hidden
+            >
+              Undo delete
+            </button>
+            <p id="taskQueueEmpty" class="task-queue-note">
+              Add a task, then select it for your next focus session.
+            </p>
+            <ul
+              id="taskQueueList"
+              class="task-queue-list"
+              aria-label="Pending tasks"
+            ></ul>
+            <button
+              id="clearTaskSelection"
+              class="profile-text-button"
+              type="button"
+              hidden
+            >
+              Clear selection
+            </button>
+            <button
+              id="clearCompletedTasks"
+              class="profile-text-button"
+              type="button"
+              hidden
+            >
+              Clear completed
+            </button>
+            <details
+              id="completedQueueTasks"
+              class="task-queue-completed"
+              hidden
+            >
+              <summary id="completedQueueSummary">Completed tasks</summary>
+              <ul
+                id="completedTaskQueueList"
+                class="task-queue-list"
+                aria-label="Completed tasks"
+              ></ul>
+            </details>
+            <p id="taskQueueStatus" class="task-queue-note" role="status"></p>
+          </section>
+
+          <section
             class="sidebar-widget movable-widget ambient-card"
             id="ambientWidget"
             data-widget-name="Ambient sounds"
@@ -251,7 +363,10 @@
             <div class="ambient-play-row">
               <select id="ambientSoundSelect">
                 <option value="rain">Rain</option>
-                <option value="cafe">Café</option>
+                <option value="fireplace">Fireplace</option>
+                <option value="beach">Beach</option>
+                <option value="jazz">Jazz</option>
+                <option value="cafe">Coffee shop</option>
                 <option value="white">White noise</option>
               </select>
               <button
@@ -279,9 +394,14 @@
               value="35"
               aria-label="Ambient volume"
             />
-            <p id="ambientStatus" class="ambient-status" role="status">
-              Choose a sound to settle in.
-            </p>
+            <a id="ambientBackgroundLink"
+              class="profile-text-button"
+              href="https://www.youtube.com/watch?v=q76bMs-NwRk"
+              target="pomodoro-ambient-youtube" rel="noopener">
+              Original YouTube recording ↗
+            </a>
+            <a href="audio/credits.html" target="_blank" rel="noopener" class="profile-text-button">Audio credits</a>
+            <p id="ambientStatus" class="ambient-status" role="status"></p>
           </section>
 
           <!-- October Calendar Widget -->
@@ -328,10 +448,12 @@
               <span>Mon</span><span>Tues</span><span>Wed</span><span>Thurs</span
               ><span>Fri</span><span>Sat</span><span>Sun</span>
             </div>
+            <p id="calendarKeyboardHint" class="sr-only">Use arrow keys to move by day or week; Home and End move to the start or end of the week.</p>
             <div
               class="cal-grid"
               id="calendarDays"
               aria-label="Focus history calendar"
+              aria-describedby="calendarKeyboardHint"
             ></div>
           </div>
         </aside>
@@ -349,19 +471,21 @@
               <button
                 type="button"
                 id="timerButton"
+                aria-keyshortcuts="Space"
                 class="push-button-dial"
                 onclick="handleDialPress()"
-                aria-label="Toggle Pomodoro Timer"
+                aria-label="Start · Focus · 25:00 remaining"
+                aria-pressed="false"
               >
                 <!-- Digits -->
-                <span id="timeText" class="time-digits">25:00</span>
+                <span id="timeText" class="time-digits" role="timer" aria-live="off">25:00</span>
                 <!-- Soft pulsating status dot -->
-                <span class="status-indicator"></span>
+                <span class="status-indicator" aria-hidden="true"></span>
               </button>
             </div>
 
             <!-- Hand-Drawn Annotation: Arrow & Note -->
-            <div class="annotation-box" id="annotationEl">
+            <div class="annotation-box" id="annotationEl" aria-hidden="true">
               <svg
                 width="34"
                 height="18"
@@ -393,6 +517,7 @@
             </p>
           </div>
 
+          <p id="timerA11yStatus" class="sr-only" role="status" aria-atomic="true"></p>
           <div class="current-task" id="currentTaskArea">
             <label for="currentTaskInput">What are you focusing on?</label>
             <input
@@ -429,14 +554,17 @@
             >
               Skip break
             </button>
-            <button class="pill-btn" onclick="resetTimer()" title="Reset Timer">
+            <button id="resetTimerButton" class="pill-btn" onclick="resetTimer()" title="Reset Timer (R)" aria-keyshortcuts="R">
               Reset
             </button>
+            <button id="miniTimerButton" type="button" class="pill-btn" aria-pressed="false" title="Open mini timer">Mini ↗</button>
             <button
               class="pill-btn"
               id="muteToggle"
               onclick="toggleAudio()"
               title="Toggle Sound"
+              aria-label="Mute timer sounds"
+              aria-pressed="false"
             >
               🔊
             </button>
@@ -462,123 +590,391 @@
       class="profile-dialog"
       aria-labelledby="profileDialogTitle"
     >
-      <form id="profileForm">
-        <h2 id="profileDialogTitle">Your profile</h2>
-        <p class="profile-save-note">Saved on this browser.</p>
-        <label for="profileNameInput">Display name</label>
+      <form id="profileForm" novalidate>
+        <header class="profile-dialog-header">
+          <h2 id="profileDialogTitle">Your profile</h2>
+          <p class="profile-save-note">Saved on this browser.</p>
+        </header>
+        <div class="profile-tabs" role="tablist" aria-label="Profile settings">
+          <button
+            type="button"
+            id="profileTab-profile"
+            role="tab"
+            aria-selected="true"
+            aria-controls="profilePanel-profile"
+            tabindex="0"
+          >
+            Profile
+          </button>
+          <button
+            type="button"
+            id="profileTab-timer"
+            role="tab"
+            aria-selected="false"
+            aria-controls="profilePanel-timer"
+            tabindex="-1"
+          >
+            Timer
+          </button>
+          <button
+            type="button"
+            id="profileTab-notifications"
+            role="tab"
+            aria-selected="false"
+            aria-controls="profilePanel-notifications"
+            tabindex="-1"
+          >
+            Notifications
+          </button>
+          <button
+            type="button"
+            id="profileTab-backup"
+            role="tab"
+            aria-selected="false"
+            aria-controls="profilePanel-backup"
+            tabindex="-1"
+          >
+            Backup &amp; Restore
+          </button>
+        </div>
+        <div id="profilePanelScroll" class="profile-panel-scroll">
+          <section
+            id="profilePanel-profile"
+            role="tabpanel"
+            aria-labelledby="profileTab-profile"
+            tabindex="0"
+          >
+            <label for="profileNameInput">Display name</label>
+            <input
+              id="profileNameInput"
+              type="text"
+              maxlength="50"
+              required
+              autocomplete="nickname"
+            />
+            <label for="profileRoleInput">About you</label>
+            <input
+              id="profileRoleInput"
+              type="text"
+              maxlength="70"
+              placeholder="e.g. Computer Science Student"
+            />
+            <label for="profilePhotoInput">Profile photo</label>
+            <input
+              id="profilePhotoInput"
+              type="file"
+              accept="image/png,image/jpeg,image/webp"
+            />
+            <p class="profile-save-note">PNG, JPG or WebP · up to 2 MB</p>
+            <button
+              type="button"
+              class="profile-text-button"
+              id="removeProfilePhoto"
+            >
+              Use default avatar
+            </button>
+          </section>
+          <section
+            id="profilePanel-timer"
+            role="tabpanel"
+            aria-labelledby="profileTab-timer"
+            hidden
+            tabindex="0"
+          >
+            <label for="dailyGoalInput">Daily focus goal</label>
+            <input
+              id="dailyGoalInput"
+              type="number"
+              min="1"
+              max="99"
+              step="1"
+              required
+              inputmode="numeric"
+              aria-describedby="dailyGoalHint"
+            />
+            <p id="dailyGoalHint" class="profile-save-note">
+              Focus sessions per day (1–99). Each completed Pomodoro fills one
+              bead.
+            </p>
+            <fieldset class="timer-duration-settings focus-preset-settings">
+              <legend>Focus presets</legend>
+              <label for="focusPresetSelect">Routine</label>
+              <select id="focusPresetSelect" aria-describedby="focusPresetHint"></select>
+              <p id="focusPresetHint" class="profile-save-note">Choose a routine, or set durations below and save your own. Save profile to apply.</p>
+              <label for="focusPresetName">Custom routine name</label>
+              <input id="focusPresetName" type="text" maxlength="30" placeholder="e.g. Reading" />
+              <div class="preset-actions">
+                <button id="saveFocusPreset" type="button" class="profile-text-button">Save routine</button>
+                <button id="deleteFocusPreset" type="button" class="profile-text-button" disabled>Delete routine</button>
+              </div>
+              <p id="focusPresetStatus" class="profile-save-note" role="status"></p>
+            </fieldset>
+            <fieldset class="timer-duration-settings">
+              <legend>Timer durations</legend>
+              <div class="timer-duration-grid">
+                <div>
+                  <label for="focusMinutesInput">Focus</label
+                  ><input
+                    id="focusMinutesInput"
+                    type="number"
+                    min="1"
+                    max="180"
+                    step="1"
+                    required
+                    inputmode="numeric"
+                  />
+                </div>
+                <div>
+                  <label for="shortBreakMinutesInput">Short break</label
+                  ><input
+                    id="shortBreakMinutesInput"
+                    type="number"
+                    min="1"
+                    max="180"
+                    step="1"
+                    required
+                    inputmode="numeric"
+                  />
+                </div>
+                <div>
+                  <label for="longBreakMinutesInput">Long break</label
+                  ><input
+                    id="longBreakMinutesInput"
+                    type="number"
+                    min="1"
+                    max="180"
+                    step="1"
+                    required
+                    inputmode="numeric"
+                  />
+                </div>
+              </div>
+              <p class="profile-save-note">
+                Minutes (1–180). Choose your long-break cycle below.
+              </p>
+              <p class="profile-save-note">
+                Running or paused sessions keep their current duration. New
+                settings apply to the next session.
+              </p>
+            </fieldset>
+            <fieldset class="timer-duration-settings">
+              <legend>Session flow</legend>
+              <label for="longBreakIntervalInput">Long break after</label>
+              <div class="interval-setting">
+                <input
+                  id="longBreakIntervalInput"
+                  type="number"
+                  min="1"
+                  max="12"
+                  step="1"
+                  value="4"
+                  required
+                  aria-describedby="longBreakIntervalHint"
+                />
+                <span id="longBreakIntervalHint"
+                  >completed focus sessions (1–12)</span
+                >
+              </div>
+              <label class="profile-task-option" for="autoStartBreaksInput">
+                <span>Auto-start breaks</span>
+                <input
+                  id="autoStartBreaksInput"
+                  type="checkbox"
+                  role="switch"
+                />
+              </label>
+              <label class="profile-task-option" for="autoStartFocusInput">
+                <span>Auto-start focus after breaks</span>
+                <input id="autoStartFocusInput" type="checkbox" role="switch" />
+              </label>
+              <p class="profile-save-note">
+                Applies when a session finishes. Reopening an expired timer
+                waits for you to start.
+              </p>
+            </fieldset>
+            <label class="profile-task-option" for="preFinishCueInput">
+              <span>One-minute focus cue</span>
+              <input id="preFinishCueInput" type="checkbox" role="switch" aria-describedby="preFinishCueHint" />
+            </label>
+            <p id="preFinishCueHint" class="profile-save-note">A soft chime once when one minute remains in a focus session. Respects mute; off by default.</p>
+            <button id="testPreFinishCue" type="button" class="profile-text-button">Preview cue</button>
+            <p id="preFinishCueTestStatus" class="profile-save-note" role="status"></p>
+            <p class="profile-save-note">Keyboard: Space to start/pause · R to reset. Shortcuts stay inactive while typing or using a dialog or control.</p>
+            <label class="profile-task-option" for="showCurrentTaskInput">
+              <span>Show “What are you focusing on?”</span>
+              <input
+                id="showCurrentTaskInput"
+                type="checkbox"
+                role="switch"
+                aria-describedby="currentTaskSettingHint"
+              />
+            </label>
+            <p id="currentTaskSettingHint" class="profile-save-note">
+              Add a task beneath the timer and include it in session history.
+            </p>
+          </section>
+          <section
+            id="profilePanel-notifications"
+            role="tabpanel"
+            aria-labelledby="profileTab-notifications"
+            hidden
+            tabindex="0"
+          >
+            <label class="profile-task-option" for="desktopNotificationsInput">
+              <span>Desktop notifications</span>
+              <input
+                id="desktopNotificationsInput"
+                type="checkbox"
+                role="switch"
+                aria-describedby="notificationSettingsStatus"
+              />
+            </label>
+            <p
+              id="notificationSettingsStatus"
+              class="profile-save-note"
+              role="status"
+            ></p>
+            <button
+              id="testNotificationButton"
+              type="button"
+              class="profile-text-button"
+              disabled
+            >
+              Send test notification
+            </button>
+            <p class="profile-save-note">
+              Keep this tab open for alerts. Your browser or system may delay
+              notifications while asleep.
+            </p>
+          </section>
+          <section
+            id="profilePanel-backup"
+            role="tabpanel"
+            aria-labelledby="profileTab-backup"
+            hidden
+            tabindex="0"
+          >
+            <fieldset class="timer-duration-settings backup-settings">
+              <legend>Backup &amp; restore</legend>
+              <div class="backup-actions">
+                <button id="exportBackupButton" type="button" class="pill-btn">
+                  Export backup
+                </button>
+                <label
+                  for="importBackupInput"
+                  class="pill-btn backup-file-label"
+                  >Choose backup</label
+                >
+                <input
+                  id="importBackupInput"
+                  type="file"
+                  accept="application/json,.json"
+                  class="sr-only"
+                />
+              </div>
+              <p class="profile-save-note">
+                Includes profile, photo, tasks and history. Store your backup
+                somewhere private.
+              </p>
+              <p id="backupStatus" role="status" class="profile-save-note"></p>
+              <button
+                id="undoBackupRestore"
+                type="button"
+                class="pill-btn undo-restore-button"
+                hidden
+              >
+                Undo restore
+              </button>
+            </fieldset>
+          </section>
+        </div>
+        <footer class="profile-dialog-footer">
+          <p
+            id="profileFormStatus"
+            role="status"
+            class="profile-form-status"
+          ></p>
+          <div class="profile-form-actions">
+            <button
+              type="button"
+              id="cancelProfile"
+              class="profile-text-button"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              id="saveProfileButton"
+              class="btn-edit-profile"
+            >
+              Save profile
+            </button>
+          </div>
+        </footer>
+      </form>
+    </dialog>
+
+    <dialog
+      id="queueTaskEditor"
+      class="profile-dialog"
+      aria-labelledby="taskEditorTitle"
+    >
+      <form id="editQueueTaskForm">
+        <h2 id="taskEditorTitle">Edit task</h2>
+        <label for="editQueueTaskName">Task name</label>
+        <input id="editQueueTaskName" type="text" maxlength="120" required />
+        <label for="editQueueTaskTarget">Daily focus target</label>
         <input
-          id="profileNameInput"
-          type="text"
-          maxlength="50"
-          required
-          autocomplete="nickname"
-        />
-        <label for="profileRoleInput">About you</label>
-        <input
-          id="profileRoleInput"
-          type="text"
-          maxlength="70"
-          placeholder="e.g. Computer Science Student"
-        />
-        <label for="dailyGoalInput">Daily focus goal</label>
-        <input
-          id="dailyGoalInput"
+          id="editQueueTaskTarget"
           type="number"
           min="1"
           max="99"
-          step="1"
           required
-          inputmode="numeric"
-          aria-describedby="dailyGoalHint"
         />
-        <p id="dailyGoalHint" class="profile-save-note">
-          Focus sessions per day (1–99). Each completed Pomodoro fills one bead.
+        <p class="profile-save-note">
+          Completed sessions stay linked to this task. Daily progress resets
+          each day.
         </p>
-        <fieldset class="timer-duration-settings">
-          <legend>Timer durations</legend>
-          <div class="timer-duration-grid">
-            <div>
-              <label for="focusMinutesInput">Focus</label
-              ><input
-                id="focusMinutesInput"
-                type="number"
-                min="1"
-                max="180"
-                step="1"
-                required
-                inputmode="numeric"
-              />
-            </div>
-            <div>
-              <label for="shortBreakMinutesInput">Short break</label
-              ><input
-                id="shortBreakMinutesInput"
-                type="number"
-                min="1"
-                max="180"
-                step="1"
-                required
-                inputmode="numeric"
-              />
-            </div>
-            <div>
-              <label for="longBreakMinutesInput">Long break</label
-              ><input
-                id="longBreakMinutesInput"
-                type="number"
-                min="1"
-                max="180"
-                step="1"
-                required
-                inputmode="numeric"
-              />
-            </div>
-          </div>
-          <p class="profile-save-note">
-            Minutes (1–180). Every 4 completed focus sessions switches to a long
-            break automatically.
-          </p>
-          <p class="profile-save-note">
-            Running or paused sessions keep their current duration. New settings
-            apply to the next session.
-          </p>
-        </fieldset>
-        <label class="profile-task-option" for="showCurrentTaskInput">
-          <span>Show “What are you focusing on?”</span>
-          <input
-            id="showCurrentTaskInput"
-            type="checkbox"
-            role="switch"
-            aria-describedby="currentTaskSettingHint"
-          />
-        </label>
-        <p id="currentTaskSettingHint" class="profile-save-note">
-          Add a task beneath the timer and include it in session history.
-        </p>
-        <label for="profilePhotoInput">Profile photo</label>
-        <input
-          id="profilePhotoInput"
-          type="file"
-          accept="image/png,image/jpeg,image/webp"
-        />
-        <p class="profile-save-note">PNG, JPG or WebP · up to 2 MB</p>
-        <button
-          type="button"
-          class="profile-text-button"
-          id="removeProfilePhoto"
-        >
-          Use default avatar
-        </button>
-        <p id="profileFormStatus" role="status" class="profile-form-status"></p>
         <div class="profile-form-actions">
-          <button type="button" id="cancelProfile" class="profile-text-button">
+          <button
+            id="cancelQueueTaskEdit"
+            type="button"
+            class="profile-text-button"
+          >
             Cancel
           </button>
-          <button type="submit" id="saveProfileButton" class="btn-edit-profile">
-            Save profile
-          </button>
+          <button type="submit" class="btn-edit-profile">Save task</button>
         </div>
       </form>
+    </dialog>
+    <dialog
+      id="restoreBackupDialog"
+      class="profile-dialog"
+      aria-labelledby="restoreBackupTitle"
+    >
+      <h2 id="restoreBackupTitle">Restore backup?</h2>
+      <p id="restoreBackupPreview" class="profile-save-note"></p>
+      <p class="profile-save-note">
+        This replaces your saved profile, tasks, history and layout, and resets
+        the timer. Current data is kept for Undo restore until the next restore.
+      </p>
+      <p id="restoreBackupStatus" role="status" class="profile-save-note"></p>
+      <div class="profile-form-actions">
+        <button
+          id="cancelRestoreBackup"
+          type="button"
+          class="profile-text-button"
+        >
+          Cancel
+        </button>
+        <button
+          id="confirmRestoreBackup"
+          type="button"
+          class="btn-edit-profile"
+        >
+          Restore backup
+        </button>
+      </div>
     </dialog>
 
     <div id="historyPopup" class="history-popup" role="tooltip" hidden>
@@ -594,8 +990,9 @@
       <ul id="historyPopupTasks" class="history-popup-tasks" hidden></ul>
     </div>
 
+    <p id="miniTimerStatus" class="persistence-note" role="status" hidden></p>
     <p id="persistenceStatus" class="persistence-note" role="status" hidden></p>
-    <script src="script.js"></script>
-    <script src="ambient.js"></script>
+    </div>
+    <script src="tab-coordination.js"></script>
   </body>
 </html>
