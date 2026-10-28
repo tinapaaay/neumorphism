@@ -7,7 +7,7 @@
   const retry = document.getElementById("tabGuardRetry");
   const recovery = document.getElementById("tabGuardRecovery");
   const app = document.getElementById("pomodoroApp");
-  const scripts = ["script.js", "mini-timer.js", "ambient.js", "data-tools.js"];
+  const scripts = ["script.js", "mini-timer.js", "ambient.js", "data-tools.js", "history-editor.js"];
   let closed = false;
 
   retry.addEventListener("click", () => window.location.reload());
@@ -28,9 +28,28 @@
   function loadScript(src) {
     return new Promise((resolve, reject) => {
       const script = document.createElement("script");
+      let settled = false;
+      const finish = (error) => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timeout);
+        window.removeEventListener("error", runtimeError);
+        script.onload = script.onerror = null;
+        if (error) {
+          script.remove?.();
+          reject(error);
+        } else resolve();
+      };
+      // An HTTP 200 does not mean the application script executed successfully.
+      const runtimeError = (event) => {
+        if (event.filename?.split(/[?#]/)[0].endsWith(`/${src}`))
+          finish(new Error(`Could not initialize ${src}`));
+      };
+      const timeout = setTimeout(() => finish(new Error(`Loading ${src} timed out`)), 15000);
+      window.addEventListener("error", runtimeError);
       script.src = src;
-      script.onload = resolve;
-      script.onerror = () => reject(new Error(`Could not load ${src}`));
+      script.onload = () => finish();
+      script.onerror = () => finish(new Error(`Could not load ${src}`));
       document.body.appendChild(script);
     });
   }

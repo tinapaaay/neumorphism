@@ -1,0 +1,45 @@
+name: Publish Pomodoro
+
+# Run explicitly after selecting GitHub Actions in Settings > Pages.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pomodoro-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          package-manager-cache: false
+      - run: npm run check
+        working-directory: 'Pomodoro Timer'
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: 'Pomodoro Timer/dist'
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Publish static timer
+        id: deployment
+        uses: actions/deploy-pages@v4

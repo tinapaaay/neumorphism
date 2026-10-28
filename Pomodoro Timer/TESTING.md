@@ -178,3 +178,20 @@ For each run, record date, browser/version, OS, viewport, origin, case ID, steps
 The cue preview remains intentionally available as **Preview cue**; earlier references to the temporary Test cue control describe the previous label. Public hosting/domain, complete manual accessibility/device verification, and actual OS notifications remain separate release checks.
 
 - [ ] **POM-T25 / POM-18 — built-site visual smoke check:** The installed repository command passed all nine suites, 19 JavaScript syntax checks, and the 17-asset build. Opera returned `noWindowsAvailable` when opening the build preview, so visual equivalence after replacing the runtime CSS CDN is not signed off. Generated `dist/` is ignored by Git.
+
+## History editing — 2026-10-28
+
+- [x] **POM-T26 / POM-19 — automated:** Relabel and link a session, preserve its original duration/time, delete and update weekly session count, Undo after reload, preserve later completions, retain baseline totals, suppress deleted IDs on stale recovery, cap Undo at 20 operations, reject malformed Undo, leave data unchanged on save failure, and preserve the active countdown.
+- [x] **POM-T26 / POM-19 — DOM model:** Open editor, edit/save/delete/Undo, filter dates, show all sessions, and restore focus on close. `npm run check` passes 10 suites, 21 syntax checks, and the 18-asset build.
+- [ ] **POM-T26 / POM-19 — manual:** Real-phone touch, screen-reader announcements and full Opera populated-history interaction remain to verify; DOM tests do not replace these checks.
+
+## Website readiness — 2026-10-28
+
+- [x] **POM-T27 / POM-20 — automated:** All 11 suites, 22 JavaScript syntax checks and the 21-asset release build pass. New modeled cases cross desktop/mobile layout while running, open/close cards through touch/menu/Escape, and preserve timer deadline and saved desktop positions. These do not establish visual or real-phone compatibility.
+- [x] **POM-T27 / POM-20 — loading:** Simulate a stalled history-editor download and a main-script runtime exception. Both leave the app hidden, show Retry and prevent a waiting tab from starting another writer until the failed owner closes.
+- [x] **POM-T27 / POM-20 — public pages/performance:** Help/privacy have working local links, no JavaScript dependency or remote assets; entry page has no audio/YouTube iframe fetch. Local startup HTML/CSS/JS is under 250 KiB. Existing ambient tests verify native Audio is not created before Play. This is a static payload/behavior budget, not a Lighthouse score or measured page speed.
+- [ ] **POM-T27 / POM-20 — Opera visual:** Isolated built origin `http://127.0.0.1:8771/` served HTML, all app scripts and styles successfully. Opera automation exposed its browser frame/address but did not expose/render the page reliably in its observations; no visual, exact zoom, or populated UI pass is recorded.
+- [ ] **POM-T27 / POM-20 — browser matrix:** Chrome, Safari, Firefox, real iOS/Android, screen reader and 200% zoom remain manual verification. Existing feature-detection/DOM models are not browser-engine runs.
+- [ ] **POM-T27 / POM-20 — deployment:** GitHub Pages selected. Enabling Pages on `tinapaaay/neumorphism` returned HTTP 422 because the current plan does not support Pages for this private repository. No visibility change or public deployment occurred. An alternative destination/plan is required; HTTPS/live-origin smoke checks remain pending. The manual workflow file is preparation only.
+
+- [x] **POM-T27 / POM-20 — data minimization:** Empty display name and optional role save successfully as Guest, survive refresh, and preserve timer settings. Previously saved user profiles retain their names.

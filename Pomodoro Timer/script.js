@@ -799,8 +799,8 @@ function validFocusPresets(items) {
 }
 const PROFILE_STORAGE_KEY = "pomodoro-local-profile";
 let profile = {
-  name: "Christine Joy Espiritu",
-  role: "Computer Science Student",
+  name: "Guest",
+  role: "",
   joined: new Date().getFullYear(),
   photo: "",
   focusedSeconds: 0,
@@ -940,11 +940,12 @@ function recordFocusedSession(
   const persistedIds = new Set(latest?.entries.map((entry) => entry.id) || []);
   if (latest) {
     const savedIds = new Set(latest.entries.map((entry) => entry.id));
+    const deletedIds = new Set(latest.deletedIds);
     // Preserve in-memory completions from earlier failed writes for export/retry.
-    latest.entries.push(...focusHistory.entries.filter((entry) => !savedIds.has(entry.id)));
+    latest.entries.push(...focusHistory.entries.filter((entry) => !savedIds.has(entry.id) && !deletedIds.has(entry.id)));
     focusHistory = latest;
   }
-  if (!focusHistory.entries.some((entry) => entry.id === sessionId)) {
+  if (!focusHistory.deletedIds?.includes(sessionId) && !focusHistory.entries.some((entry) => entry.id === sessionId)) {
     focusHistory.entries.push({
       id: sessionId,
       seconds,
@@ -1234,12 +1235,7 @@ profilePhotoInput.addEventListener("change", () => {
 });
 profileForm.addEventListener("submit", (event) => {
   event.preventDefault();
-  const name = profileNameInput.value.trim();
-  if (!name) {
-    profileNameInput.setCustomValidity("Enter a display name.");
-    profileNameInput.reportValidity();
-    return;
-  }
+  const name = profileNameInput.value.trim() || "Guest";
   const dailyGoal = Number(dailyGoalInput.value);
   if (!Number.isInteger(dailyGoal) || dailyGoal < 1 || dailyGoal > 99) {
     dailyGoalInput.setCustomValidity("Choose a whole number from 1 to 99.");
@@ -1399,6 +1395,17 @@ function localDateKey(date) {
   return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
 }
 const HISTORY_STORAGE_KEY = "pomodoro-focus-history-v1";
+function validHistoryEntry(entry) {
+  if (!entry || typeof entry.id !== "string" || !entry.id ||
+      !Number.isFinite(entry.seconds) || entry.seconds <= 0 || entry.seconds > 86400 ||
+      !Number.isFinite(entry.endedAt) || !Number.isFinite(new Date(entry.endedAt).getTime())) return null;
+  return {
+    id: entry.id, seconds: entry.seconds, endedAt: entry.endedAt,
+    task: typeof entry.task === "string" ? entry.task.slice(0, 120) : "",
+    taskId: typeof entry.taskId === "string" ? entry.taskId.slice(0, 100) : null,
+    day: localDateKey(new Date(entry.endedAt)),
+  };
+}
 function validHistory(value) {
   if (
     !value ||
@@ -1408,6 +1415,19 @@ function validHistory(value) {
     !Array.isArray(value.entries)
   )
     return null;
+  const deletedIds = value.deletedIds ?? [];
+  const undo = value.undo ?? [];
+  if (!Array.isArray(deletedIds) || deletedIds.length > 50000 ||
+      deletedIds.some((id) => typeof id !== "string" || !id) ||
+      new Set(deletedIds).size !== deletedIds.length || !Array.isArray(undo) || undo.length > 20) return null;
+  const changes = [];
+  for (const change of undo) {
+    const before = validHistoryEntry(change?.before);
+    if (!before || !["edit", "delete"].includes(change.type) ||
+        !Number.isInteger(change.index) || change.index < 0) return null;
+    changes.push({ type: change.type, before, index: change.index });
+  }
+  const deleted = new Set(deletedIds);
   const ids = new Set();
   const entries = [];
   for (const entry of value.entries) {
@@ -1415,7 +1435,7 @@ function validHistory(value) {
       !entry ||
       typeof entry.id !== "string" ||
       !entry.id ||
-      ids.has(entry.id) ||
+      ids.has(entry.id) || deleted.has(entry.id) ||
       !Number.isFinite(entry.seconds) ||
       entry.seconds <= 0 ||
       entry.seconds > 86400 ||
@@ -1434,7 +1454,56 @@ function validHistory(value) {
       day: localDateKey(new Date(entry.endedAt)),
     });
   }
-  return { version: 1, baselineSeconds: value.baselineSeconds, entries };
+  return { version: 1, baselineSeconds: value.baselineSeconds, entries, deletedIds: [...deletedIds], undo: changes };
+}
+
+function changeSessionHistory(operation, id, task = "", taskId = null) {
+  if (completionPending || window.PomodoroStorageSafety?.blocked)
+    return { ok: false, message: "Save your finished session before changing history." };
+  const next = validHistory(readLocalData(HISTORY_STORAGE_KEY));
+  if (!next) return { ok: false, message: "Could not read saved history. No changes were made." };
+  if (operation === "undo") {
+    const change = next.undo.pop();
+    if (!change) return { ok: false, message: "No history changes to undo." };
+    const existing = next.entries.findIndex((entry) => entry.id === change.before.id);
+    if (change.type === "edit") {
+      if (existing < 0) return { ok: false, message: "This session is no longer available to undo." };
+      next.entries[existing] = change.before;
+    } else {
+      if (existing >= 0) return { ok: false, message: "This session has already been restored." };
+      next.entries.splice(Math.min(change.index, next.entries.length), 0, change.before);
+      next.deletedIds = next.deletedIds.filter((key) => key !== change.before.id);
+    }
+  } else {
+    const index = next.entries.findIndex((entry) => entry.id === id);
+    if (index < 0) return { ok: false, message: "This session is no longer available." };
+    const before = { ...next.entries[index] };
+    if (id === timerSessionId) return { ok: false, message: "Finish the current timer before changing this session." };
+    if (operation === "edit") {
+      if (typeof task !== "string" || task.length > 120)
+        return { ok: false, message: "Use a task label of up to 120 characters." };
+      if (taskId !== null && !taskQueue.some((item) => item.id === taskId) && taskId !== before.taskId)
+        return { ok: false, message: "Choose an available task or a custom label." };
+      task = task.trim();
+      if (before.task === task && before.taskId === taskId) return { ok: true, message: "No changes to save." };
+      next.entries[index] = { ...before, task, taskId };
+    } else if (operation === "delete") {
+      if (next.deletedIds.length >= 50000) return { ok: false, message: "The history deletion limit has been reached. Export a backup before making further changes." };
+      next.entries.splice(index, 1);
+      next.deletedIds.push(id);
+    } else return { ok: false, message: "Unknown history action." };
+    next.undo.push({ type: operation, before, index });
+    next.undo = next.undo.slice(-20);
+  }
+  if (!writeLocalData(HISTORY_STORAGE_KEY, next))
+    return { ok: false, message: "Could not save history. Free browser storage and try again. No changes were made." };
+  focusHistory = next;
+  syncFocusedTotal();
+  reconcileTodayGoal();
+  writeLocalData(PROFILE_STORAGE_KEY, profile);
+  renderProfile();
+  renderCalendar();
+  return { ok: true, message: operation === "delete" ? "Session deleted. Undo is available." : operation === "undo" ? "History change undone." : "Session updated. Undo is available." };
 }
 const historyPopup = document.getElementById("historyPopup");
 let historyPopupAnchor = null;
@@ -1708,6 +1777,7 @@ function renderCalendar() {
       parseFloat(widget.style.top),
     ),
   );
+  window.renderSessionHistory?.();
 }
 function moveHistoryMonth(delta) {
   historyMonth = new Date(

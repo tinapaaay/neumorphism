@@ -4,8 +4,8 @@ import { fileURLToPath } from 'node:url';
 
 export const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 export const assets = [
-  'index.html', 'base.css', 'style.css', 'favicon.svg', 'site.webmanifest',
-  'script.js', 'mini-timer.js', 'ambient.js', 'data-tools.js',
+  'index.html', 'help.html', 'privacy.html', 'site-info.css', 'base.css', 'style.css', 'favicon.svg', 'site.webmanifest',
+  'script.js', 'mini-timer.js', 'ambient.js', 'data-tools.js', 'history-editor.js',
   'storage-safety.js', 'tab-coordination.js',
   'audio/credits.html', 'audio/rain.mp3', 'audio/fireplace.wav',
   'audio/beach.ogg', 'audio/jazz.ogg', 'audio/coffee-shop.ogg',

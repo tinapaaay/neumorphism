@@ -21,7 +21,8 @@ function environment() {
     }, (error) => { if (owner === item) owner = null; item.reject(error); pump(); });
   };
   function open(id, options = {}) {
-    const nodes = {}, events = {}, loaded = [];
+    const nodes = {}, events = {}, loaded = [], timers = new Map();
+    let timerId = 0;
     let reloads = 0, snapshot;
     const node = (name) => nodes[name] ||= {
       hidden: name !== "tabGuard", inert: true, style: {},
@@ -36,6 +37,8 @@ function environment() {
       },
     };
     const context = {
+      setTimeout(fn) { timers.set(++timerId, fn); return timerId; },
+      clearTimeout(id) { timers.delete(id); },
       navigator: options.unsupported ? {} : { locks },
       document: {
         getElementById: node,
@@ -43,6 +46,11 @@ function environment() {
         body: { appendChild(script) {
           loaded.push(script.src);
           Promise.resolve().then(() => {
+            if (script.src === options.hangScript) return;
+            if (script.src === options.runtimeScript) {
+              events.error({filename: `https://example.test/pomodoro/${script.src}?v=1`});
+              script.onload?.(); return;
+            }
             if (script.src === options.failScript) return script.onerror();
             if (script.src === "storage-safety.js") context.window.PomodoroStorageSafety = {
               recover() {}, inspect() {
@@ -57,11 +65,13 @@ function environment() {
       window: {
         location: { reload() { reloads++; } },
         addEventListener(name, fn) { events[name] = fn; },
+        removeEventListener(name, fn) { if (events[name] === fn) delete events[name]; },
       },
     };
     vm.runInNewContext(source, context);
     return {
       loaded, node, events,
+      expireLoads() { for (const fn of [...timers.values()]) fn(); },
       get snapshot() { return snapshot; }, get reloads() { return reloads; },
       close() {
         events.pagehide();
@@ -80,7 +90,7 @@ function environment() {
   const env = environment();
   const a = env.open("a"), b = env.open("b");
   await flush();
-  assert.deepEqual(a.loaded, ["storage-safety.js", "script.js", "mini-timer.js", "ambient.js", "data-tools.js"]);
+  assert.deepEqual(a.loaded, ["storage-safety.js", "script.js", "mini-timer.js", "ambient.js", "data-tools.js", "history-editor.js"]);
   assert.deepEqual(b.loaded, []);
   assert.equal(a.node("pomodoroApp").inert, false);
   assert.equal(a.node("tabGuard").hidden, true);
@@ -97,12 +107,12 @@ function environment() {
   assert.deepEqual(b.snapshot.sessions, [{ id: "focus-1" }]);
   assert.equal(b.snapshot.deadline, 123456789);
   assert.equal(b.node("pomodoroApp").inert, false);
-  assert.equal(b.loaded.length, 5);
+  assert.equal(b.loaded.length, 6);
   console.log("PASS: one owner, waiting tab cannot boot/write, no lease timeout, fresh tasks/history/deadline on handoff.");
 
   const c = env.open("c"), d = env.open("d"); await flush();
   c.close(); b.close(); await flush();
-  assert.equal(c.loaded.length, 0); assert.equal(d.loaded.length, 5);
+  assert.equal(c.loaded.length, 0); assert.equal(d.loaded.length, 6);
   d.events.pageshow({ persisted: true }); assert.equal(d.reloads, 1);
   console.log("PASS: closing a waiting tab does not block the next tab; cached pages reload before reuse.");
 
@@ -114,7 +124,7 @@ function environment() {
   assert.equal(waiting.loaded.length, 0);
   assert.equal(broken.loaded.includes("data-tools.js"), false);
   broken.node("tabGuardRetry").click(); assert.equal(broken.reloads, 1);
-  broken.close(); await flush(); assert.equal(waiting.loaded.length, 5);
+  broken.close(); await flush(); assert.equal(waiting.loaded.length, 6);
   console.log("PASS: partial startup failure retains ownership until close, provides retry, and prevents a second writer.");
 
   for (const options of [{ unsupported: true }, { rejectLock: true }]) {
@@ -132,8 +142,22 @@ function environment() {
   assert.match(corrupt.node("tabGuardTitle").textContent, /needs recovery/);
   console.log("PASS: damaged storage blocks all application writers before boot and offers a recovery download.");
 
+  for (const options of [{hangScript: "history-editor.js"}, {runtimeScript: "script.js"}]) {
+    const failing = environment();
+    const owner = failing.open("owner", options), next = failing.open("next");
+    await flush();
+    if (options.hangScript) owner.expireLoads();
+    await flush();
+    assert.equal(owner.node("pomodoroApp").hidden, true);
+    assert.equal(owner.node("tabGuardRetry").hidden, false);
+    assert.equal(owner.node("tabGuardTitle").textContent, "Your timer could not load");
+    assert.equal(next.loaded.length, 0);
+    owner.close(); await flush(); assert.equal(next.loaded.length, 6);
+  }
+  console.log("PASS: stalled loads and startup runtime errors show retry without releasing ownership to a competing writer.");
+
   const html = fs.readFileSync(path.join(__dirname, "../index.html"), "utf8");
-  for (const file of ["storage-safety.js", "script.js", "mini-timer.js", "ambient.js", "data-tools.js"]) {
+  for (const file of ["storage-safety.js", "script.js", "mini-timer.js", "ambient.js", "data-tools.js", "history-editor.js"]) {
     assert.equal(html.includes(`<script src="${file}">`), false);
   }
   assert(html.includes('<script src="tab-coordination.js"></script>'));

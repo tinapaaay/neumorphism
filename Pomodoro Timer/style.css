@@ -2193,3 +2193,27 @@ body {
   white-space: nowrap;
   border: 0;
 }
+
+.session-history-dialog { width: min(480px, calc(100vw - 32px)); }
+.history-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.session-history-list { list-style: none; margin: 16px 0 0; padding: 0; }
+.session-history-list li { padding: 14px 0; border-top: 1px solid #ccd9e2; overflow-wrap: anywhere; font-size: 12px; }
+.session-history-list p { margin: 0 0 8px; }
+#sessionHistoryEditForm { padding: 16px; margin-top: 12px; border-radius: 16px; box-shadow: inset 2px 2px 5px #ccd9e2, inset -2px -2px 5px #fff; }
+#sessionHistoryEditForm h3 { font-size: 13px; font-weight: 400; }
+#sessionHistoryQueue { width: 100%; padding: 10px; font: inherit; font-size: 11px; color: inherit; background: #e4edf3; border: 1px solid #b5c9d6; border-radius: 10px; }
+.session-history-dialog button { min-height: 40px; }
+.session-history-dialog button:disabled { opacity: .5; cursor: default; }
+
+.site-info-links { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-top: 16px; }
+.site-info-links a, .tab-guard a { color: #285b7b; text-underline-offset: 3px; font-size: 12px; }
+.site-info-links a { display: inline-flex; align-items: center; min-height: 44px; }
+/* Keep editable history controls comfortable at narrow widths and high zoom. */
+@media (max-width: 640px), (pointer: coarse) {
+  .session-history-dialog button { min-height: 44px; }
+  #sessionHistoryQueue { font-size: 16px; }
+}
+@media (forced-colors: active) {
+  button, input, select, .squircle-plate, .sidebar-widget { border: 1px solid ButtonText; }
+  .goal-bead.active { outline: 2px solid Highlight; }
+}

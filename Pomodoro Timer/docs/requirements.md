@@ -1,6 +1,6 @@
 # Pomodoro Timer — requirements
 
-Reviewed against source on 2026-10-27. Requirement IDs map to cases in [TESTING.md](../TESTING.md). [App flow](app-flow.md) describes the corresponding journeys.
+Reviewed against source on 2026-10-28. Requirement IDs map to cases in [TESTING.md](../TESTING.md). [App flow](app-flow.md) describes the corresponding journeys.
 
 ## Purpose and boundaries
 
@@ -13,7 +13,7 @@ Help one browser user plan focus work, run focus/break cycles, and review comple
 | POM-01 | The dial starts, pauses, and resumes the same session. Reset stops the timer and restores the configured duration without awarding focus credit. Running time is derived from a deadline, rather than counting interval callbacks. |
 | POM-02 | Focus, short break, and long break durations accept whole minutes from 1–180. Defaults are 25/5/15. Long breaks occur automatically every 1–12 completed focus sessions, default 4. Independent auto-start options default off; Skip break immediately starts focus. |
 | POM-03 | A completed focus session is recorded once using a stable session ID. Breaks and manually completing a queue task do not add focus sessions. Closed-tab recovery uses the original completion timestamp and does not send stale notifications or auto-start another session. |
-| POM-04 | The profile contains a name (up to 50 characters), role (up to 70), image, daily goal (1–99), and timer preferences. PNG/JPEG/WebP uploads are limited to 2 MiB. Profile editing uses draft values; Save persists and Cancel discards them. The separate avatar upload control saves directly. |
+| POM-04 | The profile supports an optional display name (up to 50 characters, Guest when blank), optional role (up to 70), optional image, daily goal (1–99), and timer preferences. PNG/JPEG/WebP uploads are limited to 2 MiB. Profile editing uses draft values; Save persists and Cancel discards them. The separate avatar upload control saves directly. |
 | POM-05 | Task names are limited to 120 characters and have stable IDs and daily targets of 1–99 sessions. Focus selection fills/reveals the current-task field and may change during running or paused focus without resetting the countdown. Editing the field detaches its label from the queue. Completed sessions retain the task identity/name recorded at completion. |
 | POM-06 | Tasks support rename, delete, reopen, and Clear completed. Deletion Undo stores up to 20 operations; a bulk clear is one operation. A selected task cannot be edited, deleted, or marked complete while its focus session is running or partially elapsed. Completing the selected idle task selects the next pending task. |
 | POM-07 | Daily goal beads are display-only and derive from actual completed focus history. Weekly stats use local Monday–Sunday boundaries. Multiple sessions on one day count as one streak day; yesterday's streak remains available until today is missed. Calendar popups show real per-day history. |
@@ -39,7 +39,7 @@ Use the absolute deadline to catch up after delayed callbacks, rather than decre
 
 ## State and persistence
 
-`tab-coordination.js` holds `neumorphism-pomodoro-app-v1` until its document is destroyed, including after a partial script-load failure. It loads `storage-safety.js`, recovers an interrupted transaction and checks saved records, then loads the four application scripts sequentially after ownership. Web Locks avoid storage-lease expiry when a tab is suspended. Cached pages reload on restoration.
+`tab-coordination.js` holds `neumorphism-pomodoro-app-v1` until its document is destroyed, including after a partial script-load failure. It loads `storage-safety.js`, recovers an interrupted transaction and checks saved records, then loads the five application scripts sequentially after ownership. Web Locks avoid storage-lease expiry when a tab is suspended. Cached pages reload on restoration.
 
 `script.js` owns timer/session state. `mini-timer.js` renders that state instead of creating an independent timer. History is the source of truth for focus credit.
 
@@ -85,3 +85,13 @@ Selected foreground/background pairs are checked numerically for contrast, and k
 ## Release tooling
 
 `npm run check` uses Node built-ins for syntax checks, separate-process regression suites, and an asset-only build. The generated `dist/` contains 17 allowlisted site assets plus `.nojekyll`; it excludes tests, tooling, editor settings, and documentation. Builds use a temporary output directory and replace only the generated destination. All test paths resolve relative to the repository. The GitHub workflow uses read-only repository permissions and runs the same command on Node 22/24; configuring it is not a recorded cloud run. The manifest has no service worker or offline/background execution guarantee. No deployment URL is assumed for canonical/share URLs.
+
+## POM-19 — History editing
+
+The calendar opens a date-filtered history editor with an all-sessions view and 50-row pagination. Edit changes only a completed session’s task label/link, preserving its duration and timestamp. Delete removes focus credit from derived totals. Undo retains the last 20 changes across reload and backup, and preserves intervening completions. Deleted IDs prevent stale timer recovery from recreating entries. A failed durable save leaves history unchanged; pending unsaved completions block mutations. Existing timers keep their countdown.
+
+## POM-20 — Public website readiness
+
+Help and Privacy pages are usable without JavaScript and explain local storage, backups, external requests, notifications and browser limitations. The entry point links them from both the guard/error screen and profile Backup tab. Ambient recordings are requested on Play, not initial load. Local startup HTML/CSS/JS stays under 250 KiB (excluding optional remote fonts/Tone and user-requested recordings). Script load stalls time out after 15 seconds; startup exceptions show Retry while the owner retains its lock. Responsive controls preserve the active timer and saved desktop layout. The manual Pages workflow builds/checks only the Pomodoro artifact before deployment; it is separate from read-only CI and is not evidence of a live deployment.
+
+The public build starts as Guest without personal sample names or a default role. Profile settings can save without identifying details. The Privacy page includes a cookie/local-storage explanation; no blanket consent checkbox or tracking banner is introduced.

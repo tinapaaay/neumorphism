@@ -70,3 +70,13 @@ Data stays in this browser/origin; there is no account, cloud sync, or backend. 
 If a completion cannot save, the dial stays at the finished session. Free browser storage and press the dial to retry, or export a backup containing the in-memory session. Restore/Undo pause when a completion is unsaved. Interrupted restores keep a durable recovery copy and recover before the next app startup. Damaged JSON/root records stop startup instead of silently resetting saved work; a raw recovery download is offered for manual repair (it is not a normal importable backup).
 
 Source/release setup reviewed: 2026-10-28. These documents describe the current implementation, not a promise that every browser test has passed. Keep requirements, app flow, and testing cases updated alongside behavior changes.
+
+### Edit session history
+
+Open the calendar card → **Edit history**. Filter by date or choose **All sessions**, then correct a task label, link a queued task, or delete an accidental session. **Undo last change** restores up to 20 edits/deletions, including after refresh and backup restore. All progress totals update from the corrected history.
+
+### Website information and release checks
+
+Help and Privacy & saved data are available from Edit Profile → Backup and from the loading/error screen. Both pages work without JavaScript or external fonts. Ambient recordings load on Play. Stalled app-file loads and runtime startup errors offer Retry while retaining the single-tab storage guard.
+
+`npm run check` runs 11 suites and packages 21 public assets. See [deployment instructions](docs/deployment.md) for the prepared manual GitHub Pages workflow and remaining live-origin/device checks.

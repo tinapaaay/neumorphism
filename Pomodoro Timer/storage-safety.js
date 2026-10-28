@@ -85,9 +85,18 @@
         throw safetyError("Saved task data is damaged. Download a recovery copy before making changes.");
       }
       if (key === "pomodoro-focus-history-v1") {
+        const deleted = value.deletedIds ?? [];
+        const undo = value.undo ?? [];
+        if (!Array.isArray(deleted) || deleted.length > 50000 || new Set(deleted).size !== deleted.length ||
+            deleted.some(id => typeof id !== "string" || !id) || !Array.isArray(undo) || undo.length > 20 ||
+            undo.some(change => !change || !["edit", "delete"].includes(change.type) || !Number.isInteger(change.index) || change.index < 0 ||
+              !change.before || typeof change.before.id !== "string" || !change.before.id ||
+              !Number.isFinite(change.before.seconds) || change.before.seconds <= 0 || change.before.seconds > 86400 ||
+              !Number.isFinite(change.before.endedAt) || !Number.isFinite(new Date(change.before.endedAt).getTime())))
+          throw safetyError("Saved history changes are damaged. Download a recovery copy before making changes.");
         const ids = new Set();
         if (value.entries.some((entry) => {
-          if (!entry || typeof entry.id !== "string" || !entry.id || ids.has(entry.id) ||
+          if (!entry || typeof entry.id !== "string" || !entry.id || ids.has(entry.id) || deleted.includes(entry.id) ||
               !Number.isFinite(entry.seconds) || entry.seconds <= 0 || entry.seconds > 86400 ||
               !Number.isFinite(entry.endedAt) || !Number.isFinite(new Date(entry.endedAt).getTime())) return true;
           ids.add(entry.id); return false;

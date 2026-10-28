@@ -6,6 +6,7 @@
     <title>Neumorphic Pomodoro Timer</title>
 
     <meta name="description" content="A local-first Pomodoro timer with customizable focus sessions, task planning, and progress history." />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
     <meta name="theme-color" content="#dce5ec" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="Neumorphic Pomodoro Timer" />
@@ -33,9 +34,10 @@
       <h1 id="tabGuardTitle">Opening your timer…</h1>
       <p id="tabGuardMessage" role="status">Checking for another open Pomodoro tab.</p>
       <button id="tabGuardRetry" class="pill-btn" type="button" hidden>Try again</button>
+      <p><a href="help.html">Help</a> · <a href="privacy.html">Privacy &amp; saved data</a></p>
       <button id="tabGuardRecovery" class="pill-btn" type="button" hidden>Download recovery copy</button>
     </section>
-    <noscript>Enable JavaScript to use the Pomodoro timer.</noscript>
+    <noscript>Enable JavaScript to use the Pomodoro timer. <a href="help.html">Read help</a> or <a href="privacy.html">how your data is stored</a>.</noscript>
     <div id="pomodoroApp" hidden inert>
     <div class="pomodoro-layout">
       <div class="sidebar-shell" id="sidebarShell">
@@ -130,8 +132,8 @@
               >
             </button>
             <div class="profile-info">
-              <h2 class="user-name" id="profileName">Christine Joy Espiritu</h2>
-              <p class="user-role" id="profileRole">Computer Science Student</p>
+              <h2 class="user-name" id="profileName">Guest</h2>
+              <p class="user-role" id="profileRole"></p>
               <span class="user-joined" id="profileJoined"
                 >joined since 2026</span
               >
@@ -455,6 +457,7 @@
               aria-label="Focus history calendar"
               aria-describedby="calendarKeyboardHint"
             ></div>
+            <button id="openSessionHistory" type="button" class="profile-text-button" aria-haspopup="dialog">Edit history</button>
           </div>
         </aside>
       </div>
@@ -644,22 +647,23 @@
             aria-labelledby="profileTab-profile"
             tabindex="0"
           >
-            <label for="profileNameInput">Display name</label>
+            <p class="profile-save-note">Profile details are optional and stay in this browser. You can use a nickname or leave the name blank for Guest.</p>
+            <label for="profileNameInput">Display name (optional)</label>
             <input
               id="profileNameInput"
               type="text"
               maxlength="50"
-              required
+              placeholder="Guest"
               autocomplete="nickname"
             />
-            <label for="profileRoleInput">About you</label>
+            <label for="profileRoleInput">About you (optional)</label>
             <input
               id="profileRoleInput"
               type="text"
               maxlength="70"
               placeholder="e.g. Computer Science Student"
             />
-            <label for="profilePhotoInput">Profile photo</label>
+            <label for="profilePhotoInput">Profile photo (optional)</label>
             <input
               id="profilePhotoInput"
               type="file"
@@ -877,6 +881,7 @@
                 somewhere private.
               </p>
               <p id="backupStatus" role="status" class="profile-save-note"></p>
+              <nav class="site-info-links" aria-label="Website information"><a href="help.html" target="_blank" rel="noopener">Help</a><a href="privacy.html" target="_blank" rel="noopener">Privacy &amp; saved data</a><a href="audio/credits.html" target="_blank" rel="noopener">Audio credits</a></nav>
               <button
                 id="undoBackupRestore"
                 type="button"
@@ -975,6 +980,22 @@
           Restore backup
         </button>
       </div>
+    </dialog>
+
+    <dialog id="sessionHistoryDialog" class="profile-dialog session-history-dialog" aria-labelledby="sessionHistoryTitle">
+      <div class="history-toolbar"><h2 id="sessionHistoryTitle">Session history</h2><button id="closeSessionHistory" type="button" class="profile-text-button">Close</button></div>
+      <label for="sessionHistoryDate">Date</label>
+      <input id="sessionHistoryDate" type="date" />
+      <div class="history-toolbar"><button id="allSessionHistory" type="button" class="profile-text-button">All sessions</button><button id="undoSessionHistory" type="button" class="profile-text-button">Undo last change</button></div>
+      <p id="sessionHistoryStatus" role="status" class="profile-save-note"></p>
+      <form id="sessionHistoryEditForm" hidden>
+        <h3>Edit session task</h3>
+        <label for="sessionHistoryQueue">Link to a queued task</label><select id="sessionHistoryQueue"></select>
+        <label for="sessionHistoryTask">Task label</label><input id="sessionHistoryTask" type="text" maxlength="120" placeholder="Focus session" />
+        <div class="profile-form-actions"><button id="cancelSessionHistoryEdit" type="button" class="profile-text-button">Cancel</button><button type="submit" class="btn-edit-profile">Save session</button></div>
+      </form>
+      <ul id="sessionHistoryList" class="session-history-list" aria-label="Completed focus sessions"></ul>
+      <button id="moreSessionHistory" type="button" class="profile-text-button" hidden>Show more</button>
     </dialog>
 
     <div id="historyPopup" class="history-popup" role="tooltip" hidden>

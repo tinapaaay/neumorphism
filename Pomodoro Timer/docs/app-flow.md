@@ -107,3 +107,7 @@ Reduced-motion preferences remove CSS transitions/animations, supplementing the 
 ## Build and release flow
 
 Run `npm run check` from this project directory: parse source/tooling/tests → run all repository regression suites → create an allowlisted `dist/` folder. Preview that folder over localhost, then finish the manual release checks in [deployment](deployment.md). The configured GitHub workflow repeats checks/build on matching changes; publication is a separate action. Local CSS loads before component styling; the optional sound library is deferred so it does not block parsing the timer UI.
+
+## Correct session history
+
+Calendar → Edit history → selected date, or All sessions → Edit → custom label or queued task → Save session. Delete removes an accidental session immediately; Undo last change reverses the most recent edit/delete. Undo remains available after refresh. Closing the editor returns focus to its calendar button. Stats, goal beads, calendar and task progress derive from the updated history; active timer state stays unchanged.
