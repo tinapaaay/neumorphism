@@ -80,3 +80,7 @@ Open the calendar card → **Edit history**. Filter by date or choose **All sess
 Help and Privacy & saved data are available from Edit Profile → Backup and from the loading/error screen. Both pages work without JavaScript or external fonts. Ambient recordings load on Play. Stalled app-file loads and runtime startup errors offer Retry while retaining the single-tab storage guard.
 
 `npm run check` runs 11 suites and packages 21 public assets. See [deployment instructions](docs/deployment.md) for the prepared manual GitHub Pages workflow and remaining live-origin/device checks.
+
+## Live website
+
+[Open the Pomodoro Timer](https://tinapaaay.github.io/pomodoro-site/). Public build files live in [pomodoro-site](https://github.com/tinapaaay/pomodoro-site); this development repository remains private. To move localhost data, export a backup locally and restore it on the public website. See [deployment instructions](docs/deployment.md) for future updates.

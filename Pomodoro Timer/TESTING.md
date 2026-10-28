@@ -195,3 +195,10 @@ The cue preview remains intentionally available as **Preview cue**; earlier refe
 - [ ] **POM-T27 / POM-20 — deployment:** GitHub Pages selected. Enabling Pages on `tinapaaay/neumorphism` returned HTTP 422 because the current plan does not support Pages for this private repository. No visibility change or public deployment occurred. An alternative destination/plan is required; HTTPS/live-origin smoke checks remain pending. The manual workflow file is preparation only.
 
 - [x] **POM-T27 / POM-20 — data minimization:** Empty display name and optional role save successfully as Guest, survive refresh, and preserve timer settings. Previously saved user profiles retain their names.
+
+## Public deployment — October 28, 2026
+
+- [x] **POM-T28 / POM-20 — release:** `npm run check` passes 11 suites, 22 syntax checks and the 21-asset build before publishing.
+- [x] **POM-T28 / POM-20 — GitHub Pages:** New public `tinapaaay/pomodoro-site` contains only the built assets and `.nojekyll`; private `tinapaaay/neumorphism` remains private. Pages reports commit `e350e55` as built, without error, with HTTPS enforced.
+- [x] **POM-T28 / POM-20 — live network:** `https://tinapaaay.github.io/pomodoro-site/` responds HTTP 200 with HTML content type and HSTS. All 21 served public assets were downloaded over HTTPS and hash-matched to the checked build, including Help, Privacy and Audio credits.
+- [ ] **POM-T28 / POM-20 — remaining:** Actual live UI interactions, OS notifications, phone touch/landscape, screen reader and full cross-browser rendering remain separate manual checks. HTTP/hash checks do not establish browser interaction or accessibility compliance.

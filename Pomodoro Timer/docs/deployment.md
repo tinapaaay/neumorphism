@@ -60,3 +60,25 @@ No repository hosting settings were changed and no public deployment was perform
 - Check keyboard focus, 200% zoom and a screen reader, and check a real phone.
 
 Workflow setup follows the official [GitHub Pages custom-workflow guide](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages), reviewed October 28, 2026. GitHub Pages was selected. Enabling it on the existing private repository returned HTTP 422: “Your current plan does not support GitHub Pages for this repository.” The repository remains private and unpublished. A separate public build-only repository or a plan/host change is needed before this workflow can publish. The actual live URL remains unconfirmed.
+
+## Active public website — October 28, 2026
+
+- Website: https://tinapaaay.github.io/pomodoro-site/
+- Public build repository: https://github.com/tinapaaay/pomodoro-site
+- Private development repository: `tinapaaay/neumorphism` (visibility unchanged).
+- Pages source: public repository `main`, root `/`, with `.nojekyll` and HTTPS enforcement.
+- Initial public commit: `e350e5542864a5e6d8f05e1071c61d9438a5b392`, copied from the checked `dist/` produced by private source commit `1c0c066`.
+- GitHub Pages API reports the initial deployment as `built`, without a build error.
+
+The public repository contains only 21 site assets and `.nojekyll`. It does not contain private Git history, editor settings, tests, project documents, or other sample projects. Browser-delivered HTML/CSS/JavaScript is public as part of the website.
+
+### Publishing future updates
+
+1. Edit and test in the private project with `npm run check`.
+2. In a checkout of `tinapaaay/pomodoro-site`, replace only public site files with the fresh contents of `Pomodoro Timer/dist/`, preserving its `.git` folder.
+3. Review `git diff`, commit, and push to public `main`. Pages rebuilds automatically from that branch; no private-repository Pages workflow is needed.
+4. Verify the Pages build and live HTTPS page. Avoid publishing the private repository root.
+
+The private repository's optional **Publish Pomodoro** workflow is not used by this public build-only setup; the plan restriction still applies to Pages on the private repository itself.
+
+Existing localhost data does not transfer automatically. Export a backup locally and restore it on the public address to move your profile, tasks and history.
