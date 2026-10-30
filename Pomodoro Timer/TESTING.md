@@ -202,3 +202,12 @@ The cue preview remains intentionally available as **Preview cue**; earlier refe
 - [x] **POM-T28 / POM-20 — GitHub Pages:** New public `tinapaaay/pomodoro-site` contains only the built assets and `.nojekyll`; private `tinapaaay/neumorphism` remains private. Pages reports commit `e350e55` as built, without error, with HTTPS enforced.
 - [x] **POM-T28 / POM-20 — live network:** `https://tinapaaay.github.io/pomodoro-site/` responds HTTP 200 with HTML content type and HSTS. All 21 served public assets were downloaded over HTTPS and hash-matched to the checked build, including Help, Privacy and Audio credits.
 - [ ] **POM-T28 / POM-20 — remaining:** Actual live UI interactions, OS notifications, phone touch/landscape, screen reader and full cross-browser rendering remain separate manual checks. HTTP/hash checks do not establish browser interaction or accessibility compliance.
+
+## Sidebar typography — October 30, 2026
+
+- [x] Removed the desktop sidebar's `scale(0.78)`. It now uses an actual 360px maximum width, with the existing mobile drawer width preserved.
+- [x] Source sizing: 17px card titles, 14px controls/task text/calendar dates, 12px weekday/detail text, 16px sound selector on mobile. The existing Short Stack face and central timer sizing remain intact; floating cards use the same type roles.
+- [x] `npm run check`: 11 suites pass and all 21 public assets build. No new test suite was added for this styling change.
+- [x] Opera loads the isolated built site and exposes the opened profile, goal, stats, queue, sound and calendar controls through accessibility inspection.
+- [ ] Opera screenshot capture returned a small perspective thumbnail, so no full-resolution desktop/mobile visual pass is claimed. Actual phone and zoom checks remain pending.
+- Typography scan reports only the existing Inter font warning; Inter is intentionally retained for the established timer/number styling.
