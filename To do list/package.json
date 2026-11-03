@@ -1,0 +1,8 @@
+{
+  "name": "neumorphic-todo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Static daily dashboard; dependencies are only for browser tests.",
+  "scripts": { "test": "node --test --test-concurrency=1 tests/*.test.cjs", "check": "node --check script.js" },
+  "devDependencies": { "playwright": "1.62.1" }
+}

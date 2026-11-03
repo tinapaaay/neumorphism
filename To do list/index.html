@@ -10,10 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Short+Stack&display=swap" rel="stylesheet">
   
-  <!-- Tone.js for tactile pop sound -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
-
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=20261029-manual-qa-1">
 </head>
 <body>
 
@@ -22,6 +19,7 @@
     <div class="hello-tin">Hello <span>Tin</span>,</div>
     <div class="everyday-sub">Everyday is a good day!</div>
 
+    <button type="button" id="open-settings" class="settings-button" aria-label="Personal settings" title="Personal settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m9 3-.6 2.3-2 .9-2.2-.6-2 3.4 1.6 1.7v2.6L2.2 15l2 3.4 2.2-.6 2 .9L9 21h4l.6-2.3 2-.9 2.2.6 2-3.4-1.6-1.7v-2.6L19.8 9l-2-3.4-2.2.6-2-.9L13 3Z"/><circle cx="11" cy="12" r="3"/></svg></button>
     <!-- Clock Widget -->
     <div class="clock-card">
       <div class="clock-display">
@@ -33,26 +31,16 @@
 
     <!-- Calendar Widget -->
     <div class="calendar-card">
-      <div class="cal-title-num">24</div>
-      <div class="cal-title-text">Calendar</div>
-      
-      <div class="cal-week-bar">
-        <span>Mon</span><span>Tues</span><span>Wed</span><span>Thurs</span><span>Fri</span><span>Sat</span><span>Sun</span>
+      <div class="cal-title-num"></div>
+      <div class="cal-title-text" id="calendar-month" aria-live="polite"></div>
+      <div class="cal-week-bar" aria-hidden="true">
+        <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
       </div>
-
-      <div class="cal-dates-wrap">
-        <!-- Row 1 -->
-        <div></div><div></div><div class="cal-date">1</div><div class="cal-date">2</div><div class="cal-date">3</div><div class="cal-date">4</div><div></div>
-        <!-- Row 2 -->
-        <div class="cal-date">5</div><div class="cal-date">6</div><div class="cal-date">7</div><div class="cal-date">8</div><div class="cal-date">9</div><div class="cal-date">10</div><div class="cal-date">11</div>
-        <!-- Row 3 -->
-        <div class="cal-date">12</div><div class="cal-date">13</div><div class="cal-date">14</div><div class="cal-date">15</div><div class="cal-date">16</div><div class="cal-date">17</div><div class="cal-date">18</div>
-        <!-- Row 4 -->
-        <div class="cal-date">19</div><div class="cal-date">20</div><div class="cal-date">21</div><div class="cal-date">22</div><div class="cal-date">23</div>
-        <div class="cal-date active-day"><span>24</span></div>
-        <div class="cal-date">25</div>
-        <!-- Row 5 -->
-        <div class="cal-date">26</div><div class="cal-date">27</div><div class="cal-date">28</div><div class="cal-date">29</div><div class="cal-date">30</div><div class="cal-date">31</div><div></div>
+      <div class="cal-dates-wrap" role="group" aria-labelledby="calendar-month"></div>
+      <div class="calendar-navigation">
+        <button type="button" id="calendar-prev" aria-label="Previous month">‹</button>
+        <button type="button" id="calendar-today">Today</button>
+        <button type="button" id="calendar-next" aria-label="Next month">›</button>
       </div>
     </div>
 
@@ -61,6 +49,12 @@
       <div class="todo-title">To do list:</div>
       <button type="button" id="clear-finished-button" class="clear-finished-button" disabled>Clear finished</button>
 
+      <div class="task-views" role="group" aria-label="Task views">
+        <button type="button" data-view="today" aria-pressed="true">Today</button>
+        <button type="button" data-view="upcoming" aria-pressed="false">Upcoming</button>
+        <button type="button" data-view="completed" aria-pressed="false">Completed</button>
+      </div>
+      <div class="task-filter-bar"><span id="task-filter-label" aria-live="polite">All tasks</span><button type="button" id="show-all-tasks" hidden>Show all</button></div>
       <div class="todo-items-list" id="todo-container">
         <!-- Brush my teeth (Group 12) -->
         <div class="todo-row done" onclick="toggleTask(this)">
@@ -98,14 +92,21 @@
           <span class="todo-task-label">Drink Water</span>
         </div>
 
+        <p id="task-empty-message" class="task-empty-message" hidden>No tasks for this day yet.</p>
+      </div>
         <!-- Add new task (Group 18) -->
         <button type="button" class="todo-row add-task-row" id="add-task-button" onclick="addNewTask()">
           <span class="add-task-plus" aria-hidden="true">+</span>
           <span class="todo-task-label">Add new task</span>
         </button>
+      <div class="daily-progress" aria-label="Daily task progress">
+        <div id="daily-progress-ring" class="daily-progress-ring" role="progressbar" aria-label="Today's tasks" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span aria-hidden="true">✦</span></div>
+        <div><span class="daily-progress-heading">A little progress, every day</span><span id="daily-progress-text" aria-live="polite">0 of 0 completed</span></div>
+        <button type="button" id="open-weekly-review" class="review-launch" aria-label="Open weekly review">Review ↗</button>
       </div>
     </div>
 
+    <div id="celebration" class="celebration" role="status" hidden>All done for today. Nicely done! <span aria-hidden="true">✦</span></div>
     <!-- Bottom widgets -->
     <section class="summary-card time-remaining-card" aria-label="Time remaining today">
       <div class="summary-title time-remaining-title">Time remaining<br>today</div>
@@ -127,6 +128,7 @@
 
     <section class="summary-card notes-card" aria-label="Notes">
       <label class="notes-title" for="notes-input">Notes</label>
+      <span id="notes-save-status" class="notes-save-status" role="status"></span>
       <div class="notes-paper">
         <textarea id="notes-input" class="notes-input" aria-label="Write your notes" placeholder="Write something…" spellcheck="false"></textarea>
       </div>
@@ -142,6 +144,16 @@
       <p class="task-dialog-hint">One thing at a time.</p>
       <label class="task-input-label" for="new-task-input">Task name</label>
       <input id="new-task-input" name="task" class="task-name-input" placeholder="What would you like to do?" maxlength="80" required autocomplete="off" autofocus>
+      <label class="task-input-label due-date-label" for="task-due-date">Due date <span>(optional)</span></label>
+      <div class="due-date-field"><input type="date" id="task-due-date" class="task-name-input" min="0001-01-01" max="9999-12-31"><button type="button" id="clear-due-date">No date</button></div>
+      <label class="task-input-label due-date-label" for="task-repeat">Repeat</label>
+      <select id="task-repeat" class="task-name-input"><option value="none">Does not repeat</option><option value="daily">Every day</option><option value="weekly">Every week</option><option value="custom">Selected weekdays</option></select>
+      <fieldset id="repeat-weekdays" class="repeat-weekdays" hidden><legend>Repeat on</legend>
+        <label><input type="checkbox" value="1" aria-label="Monday">M<span class="sr-only">onday</span></label><label><input type="checkbox" value="2" aria-label="Tuesday">T<span class="sr-only">uesday</span></label><label><input type="checkbox" value="3" aria-label="Wednesday">W<span class="sr-only">ednesday</span></label><label><input type="checkbox" value="4" aria-label="Thursday">T<span class="sr-only">hursday</span></label><label><input type="checkbox" value="5" aria-label="Friday">F<span class="sr-only">riday</span></label><label><input type="checkbox" value="6" aria-label="Saturday">S<span class="sr-only">aturday</span></label><label><input type="checkbox" value="0" aria-label="Sunday">S<span class="sr-only">unday</span></label>
+      </fieldset>
+      <p id="repeat-help" class="form-help">Repeats start on the due date, or today.</p>
+      <div class="task-priority-fields"><div><label class="task-input-label" for="task-priority">Priority</label><select id="task-priority" class="task-name-input"><option value="normal">Normal</option><option value="high">High</option><option value="low">Low</option></select></div><label class="pin-field"><input type="checkbox" id="task-pinned"> Pin to top 3</label></div>
+      <p id="task-form-error" class="form-error" role="alert" hidden></p>
       <div class="task-dialog-actions">
         <button type="button" class="task-action task-cancel" id="cancel-task-dialog">Cancel</button>
         <button type="submit" class="task-action task-submit"><span aria-hidden="true">+</span> Add task</button>
@@ -149,11 +161,48 @@
     </form>
   </dialog>
 
+  <dialog id="weekly-review-dialog" class="task-dialog weekly-review-dialog" aria-labelledby="weekly-review-title">
+    <div class="task-dialog-header"><h2 id="weekly-review-title">A week of little wins</h2><button type="button" id="close-weekly-review" class="task-close" aria-label="Close weekly review">×</button></div>
+    <div class="review-navigation"><button type="button" id="review-prev" aria-label="Previous week">‹</button><div><p id="review-week-label" aria-live="polite"></p><button type="button" id="review-current">This week</button></div><button type="button" id="review-next" aria-label="Next week">›</button></div>
+    <div class="review-metrics">
+      <div><strong id="review-finished">0</strong><span>tasks finished</span></div>
+      <div><strong id="review-pending">0</strong><span>still pending</span></div>
+      <div><strong id="review-water-goals">—</strong><span>water goals met</span></div>
+    </div>
+    <section class="review-section" aria-labelledby="review-task-chart-title"><h3 id="review-task-chart-title">Daily checklist progress</h3><div id="review-task-chart" class="review-chart" role="list" aria-label="Daily task progress"></div></section>
+    <section class="review-section" aria-labelledby="review-water-chart-title"><h3 id="review-water-chart-title">Water through the week</h3><div id="review-water-chart" class="review-chart water-review-chart" role="list" aria-label="Daily water intake"></div><p id="review-water-summary" class="review-help"></p></section>
+    <div class="review-task-lists">
+      <section class="review-section"><h3>Little wins</h3><ul id="review-wins" class="review-list"></ul><p id="review-archived" class="review-help"></p></section>
+      <section class="review-section"><h3>Carry into next week</h3><ul id="review-carryover" class="review-list"></ul><p class="review-help">Pending now, due by this Sunday, plus tasks without a date.</p></section>
+    </div>
+    <p class="review-help review-history-note">Past days show saved records. A dash means no record; future days are not counted.</p>
+  </dialog>
+  <dialog id="settings-dialog" class="task-dialog settings-dialog" aria-labelledby="settings-title">
+    <form id="settings-form">
+      <div class="task-dialog-header"><h2 id="settings-title">Make yourself at home</h2><button type="button" id="close-settings" class="task-close" aria-label="Close settings">×</button></div>
+      <p class="task-dialog-hint">Your little space, your way.</p>
+      <label class="task-input-label" for="settings-name">Your name</label><input id="settings-name" class="task-name-input" maxlength="30" required autocomplete="given-name">
+      <label class="task-input-label due-date-label" for="settings-greeting">Greeting</label><input id="settings-greeting" class="task-name-input" maxlength="80" required>
+      <label class="task-input-label due-date-label" for="settings-water">Daily water target (mL)</label><input type="number" id="settings-water" class="task-name-input" min="250" max="10000" step="250" required>
+      <label class="task-input-label due-date-label" for="settings-sound">Completion sound</label><div class="sound-setting"><select id="settings-sound" class="task-name-input"><option value="pop">Soft pop</option><option value="chime">Gentle chime</option><option value="off">Off</option></select><button type="button" id="preview-sound" class="task-action task-cancel">Preview</button></div>
+      <label class="task-input-label due-date-label" for="settings-volume">Sound volume</label><input type="range" id="settings-volume" min="0" max="100" step="5"><output id="settings-volume-value" for="settings-volume">50%</output>
+      <details class="backup-tools"><summary>Backup &amp; restore</summary>
+        <p class="form-help">Save a copy of your tasks, schedules, notes and settings. Use it to move your data to another browser.</p>
+        <div class="backup-actions"><button type="button" id="export-backup" class="task-action task-cancel">Download backup</button><label for="import-backup" class="task-action task-cancel">Choose backup<input type="file" id="import-backup" accept=".json,application/json" class="sr-only"></label></div>
+        <div id="backup-preview" hidden><p id="backup-summary" class="form-help"></p><p class="form-help">Restoring replaces this browser’s dashboard data. A recovery copy is kept first.</p><button type="button" id="confirm-restore" class="task-action task-submit">Restore this backup</button><button type="button" id="cancel-restore" class="task-action task-cancel">Cancel</button></div>
+        <button type="button" id="recover-backup" class="task-action task-cancel" hidden>Undo last restore</button>
+        <p id="backup-status" class="form-help" role="status"></p>
+      </details>
+      <p id="settings-status" class="form-help" role="status"></p>
+      <div class="task-dialog-actions"><button type="button" id="cancel-settings" class="task-action task-cancel">Cancel</button><button type="submit" class="task-action task-submit">Save settings</button></div>
+    </form>
+  </dialog>
+  <div id="app-status" class="app-status" role="status" hidden></div>
   <div id="task-undo-toast" class="task-undo-toast" hidden>
     <span id="task-removal-message" role="status"></span>
     <button type="button" id="undo-clear-tasks">Undo</button>
   </div>
 
-  <script src="script.js"></script>
+  <script src="script.js?v=20261029-manual-qa-1"></script>
 </body>
 </html>
