@@ -45,7 +45,7 @@ Some pages load Tailwind CSS, Google Fonts, and Tone.js from CDNs, so an interne
 - **Calendar history:** Browse completed sessions by date and hover, focus, or tap a day for a small history popup.
 - **Weekly stats:** View Monday–Sunday focus time and completed sessions, plus a daily streak that continues across weeks. Yesterday's streak stays active while today is still in progress.
 - **Draggable cards:** Move cards beside the timer, bring the most recently used card to the front, or use Reset layout to return them all to the sidebar.
-- **Ambient sounds:** Play generated rain, café, or white-noise soundscapes with volume control. Audio starts manually, and sound choice and volume are saved.
+- **Ambient sounds:** Play bundled rain, café, ocean, fireplace, and jazz recordings or generated white noise with volume control. Audio starts manually; selection and volume are saved. See the [audio credits](Pomodoro%20Timer/audio/credits.html).
 - **Session recovery:** Running and paused timer state survives refresh. An elapsed focus session is recorded when the app is reopened, without counting it twice.
 
 ### Controls
@@ -60,15 +60,18 @@ Add tasks, mark them complete, clear finished tasks, and undo a clear. The dashb
 
 ## Files
 
-The Alarm Clock, Pomodoro Timer, and To do list each separate their markup, styles, and behavior into `index.html`, `style.css`, and `script.js`. The Pomodoro Timer also has `ambient.js` for its soundscapes. Sign Up currently lives in a single HTML file.
+The Alarm Clock, Pomodoro Timer, and To do list each separate their markup, styles, and behavior into `index.html`, `style.css`, and `script.js`. The Pomodoro Timer also separates storage recovery, tab ownership, backups, history editing, Mini, and audio into scripts; its [README](Pomodoro%20Timer/README.md) maps them. Sign Up currently lives in a single HTML file.
 
 ## Data and scope
 
 These are browser-based projects with no backend or account system. Features that save data use `localStorage` on the current browser and origin; data does not sync between devices or browsers, and clearing site data removes it. Profile photos also remain in browser storage.
 
-Timer recovery does not provide notifications while the page is closed. The Sign Up project is a UI demo and does not create real accounts.
+The timer can request desktop notifications while its owner tab is running; closing the page stops live alerts. Alarm Clock does not schedule a ringing alarm and does not persist its alarm list. The Sign Up project is a UI demo and does not create real accounts.
 
 ## Next improvements
 
-- Improve the ambient sound quality and replace the current soundscapes.
 - Continue adding neumorphic designs and refining the existing interactions.
+
+## Development guide
+
+See [Development and maintenance](docs/DEVELOPMENT.md) for setup, source files, implementation limits, editing instructions, verification, and deployment.
