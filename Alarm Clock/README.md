@@ -36,3 +36,11 @@ Keep the same browser, host, and port when testing saved data. `localhost` and `
 This is an interface demo, not a working wake-up alarm service. It does not schedule ringing or notifications and does not save alarms across reload. “Next alarm” means the first active row in list order, not the next chronological event. It loads Tailwind, Google Fonts, and Tone.js from CDNs. See requirements for validation and accessibility gaps.
 
 Source reviewed: 2026-10-27. These documents describe the current implementation, not a promise that every browser test has passed. Keep requirements, app flow, and testing cases updated alongside behavior changes.
+
+## Edit
+
+Edit `index.html`, `style.css`, and `script.js`. Tailwind, Google Fonts, and Tone.js load externally.
+
+## Deploy
+
+Serve this folder and its assets as static files, preserving relative paths. Check external resources and the controls on the actual deployed URL.

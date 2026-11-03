@@ -46,3 +46,11 @@ There is no account, backend, automatic cloud sync, or scheduled reminder delive
 The regression suite is saved in `tests/`. With Node.js available, run `npm install` once, then `npm test`. On macOS the tests use installed Opera when available. For another Opera installation, set `OPERA_EXECUTABLE` to its executable path. If Opera is absent, install a Playwright browser with `npx playwright install chromium` before testing. These are development dependencies; the dashboard itself still runs without them.
 
 Thirteen automated tests passed in isolated Opera on 2026-10-29. See [Testing](TESTING.md) for coverage and remaining manual checks. Tests use disposable profiles and never clear the user's browser data.
+
+## Edit
+
+Edit markup in `index.html`, presentation in `style.css`, and tasks/water/clock behavior in `script.js`. Google Fonts and Tone.js load externally.
+
+## Deploy
+
+Serve this folder and its assets as static files, preserving relative paths. Check external resources and the controls on the actual deployed URL.

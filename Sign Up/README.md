@@ -32,3 +32,11 @@ All markup, CSS, SVG icons, and JavaScript are in `index.html`. Inline functions
 No account is created. There is no backend, OAuth integration, credential validation, password policy, or application storage. Use sample values, not real credentials. Tailwind and Google Fonts Inter load from CDNs. The password-eye button is removed from normal tab order; visible labels/focus behavior need accessibility improvement.
 
 Source reviewed: 2026-10-27. These documents describe the current implementation, not a promise that every browser test has passed. Keep requirements, app flow, and testing cases updated alongside behavior changes.
+
+## Edit
+
+Markup, styles, and scripts are in `index.html`. Tailwind and Inter load from external services.
+
+## Deploy
+
+Serve this folder and its assets as static files, preserving relative paths. Check external resources and the controls on the actual deployed URL.

@@ -82,15 +82,19 @@ Add tasks, mark them complete, clear finished tasks, and undo a clear. The dashb
 
 ## Files
 
-The Alarm Clock, Pomodoro Timer, and To do list each separate their markup, styles, and behavior into `index.html`, `style.css`, and `script.js`. The Pomodoro Timer also has `ambient.js` for its soundscapes and `data-tools.js` for backup and restore. Sign Up currently lives in a single HTML file.
+The Alarm Clock, Pomodoro Timer, and To do list each separate their markup, styles, and behavior into `index.html`, `style.css`, and `script.js`. The Pomodoro Timer also separates storage recovery, tab ownership, backups, history editing, Mini, and audio into scripts; its [README](Pomodoro%20Timer/README.md) maps them. Sign Up currently lives in a single HTML file.
 
 ## Data and scope
 
 These are browser-based projects with no backend or account system. Features that save data use `localStorage` on the current browser and origin; data does not sync between devices or browsers, and clearing site data removes it. Profile photos also remain in browser storage.
 
-Timer recovery does not provide notifications while the page is closed. The Sign Up project is a UI demo and does not create real accounts.
+The timer can request desktop notifications while its owner tab is running; closing the page stops live alerts. Alarm Clock does not schedule a ringing alarm and does not persist its alarm list. The Sign Up project is a UI demo and does not create real accounts.
 
 ## Next improvements
 
 - Refine the ambient sound selection and loop transitions.
 - Continue adding neumorphic designs and refining the existing interactions.
+
+## Development guide
+
+See [Development and maintenance](docs/DEVELOPMENT.md) for setup, source files, implementation limits, editing instructions, verification, and deployment.
