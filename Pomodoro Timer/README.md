@@ -8,6 +8,11 @@ A browser-local focus timer with a neumorphic dial, task queue, session history,
 - [App flow](docs/app-flow.md): user journeys, state transitions, and recovery paths.
 - [Testing](TESTING.md): setup, manual regression cases, and current test coverage.
 - [Deployment](docs/deployment.md): build, preview, hosting, and release checks.
+- [Design system](DESIGN.md): colors, type scale, shadows, shapes, and component rules. Read it before changing any UI, and update it in the same change. Check it with:
+
+  ```sh
+  npx -y @google/design.md@0.4.0 lint --format json DESIGN.md
+  ```
 
 ## Run locally
 
