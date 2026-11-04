@@ -1,5 +1,5 @@
 /* Local element defaults and the few layout utilities used by this page. */
-*, ::before, ::after { box-sizing: border-box; border-width: 0; border-style: solid; border-color: #e5e7eb; }
+*, ::before, ::after { box-sizing: border-box; border-width: 0; border-style: solid; border-color: var(--color-neutral); }
 html { line-height: 1.5; -webkit-text-size-adjust: 100%; tab-size: 4; font-family: Inter, system-ui, sans-serif; }
 body { margin: 0; line-height: inherit; }
 h1, h2, h3, h4, h5, h6 { font-size: inherit; font-weight: inherit; }
@@ -14,7 +14,7 @@ fieldset { margin: 0; padding: 0; }
 legend { padding: 0; }
 img, svg, video, canvas { display: block; vertical-align: middle; }
 img, video { max-width: 100%; height: auto; }
-input::placeholder, textarea::placeholder { color: #6b7280; opacity: 1; }
+input::placeholder, textarea::placeholder { color: var(--color-secondary); opacity: 1; }
 [hidden], dialog:not([open]) { display: none !important; }
 .relative { position: relative; }
 .flex { display: flex; }

@@ -8,7 +8,9 @@ const { pathToFileURL } = require('node:url');
   const root = path.join(__dirname, '..');
   const html = await fs.readFile(path.join(root, 'index.html'), 'utf8');
   assert(!html.includes('cdn.tailwindcss.com'));
-  assert(html.indexOf('href="base.css"') < html.indexOf('href="style.css"'));
+  const baseAt = html.indexOf('href="base.css"');
+  const styleAt = html.search(/href="style\.css(\?[^"]*)?"/);
+  assert(baseAt !== -1 && styleAt !== -1 && baseAt < styleAt);
   assert(html.includes('name="description"'));
   assert(html.includes('property="og:title"'));
   assert(html.includes('rel="icon" href="favicon.svg"'));
@@ -30,7 +32,7 @@ const { pathToFileURL } = require('node:url');
     }
     // All local HTML and manifest references in the packaged entry point exist.
     for (const match of html.matchAll(/(?:src|href)="([^"#]+)"/g)) {
-      const target = match[1];
+      const target = match[1].split('?')[0];
       if (/^(https?:|data:|mailto:)/.test(target)) continue;
       await fs.stat(path.join(output, target));
     }
