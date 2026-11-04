@@ -213,13 +213,15 @@ function applyTimerVisuals() {
   document.getElementById("modeShortBreak").hidden = !isBreak;
   document.getElementById("skipBreakButton").hidden = !isBreak;
   document.getElementById("modePomodoro").textContent =
-    `${currentMode === "pomodoro" ? totalSeconds / 60 : profile.focusMinutes}m`;
+    `Focus · ${currentMode === "pomodoro" ? totalSeconds / 60 : profile.focusMinutes}m`;
   document.getElementById("modeShortBreak").textContent =
     `${currentMode === "longBreak" ? "Long break" : "Short break"} · ${totalSeconds / 60}m`;
   document.getElementById("breakMessage").textContent =
     currentMode === "longBreak" ? "Take a longer break" : "Take a break";
   document.getElementById("modePomodoro").classList.toggle("active", !isBreak);
   document.getElementById("modeShortBreak").classList.toggle("active", isBreak);
+  document.getElementById("modePomodoro").setAttribute("aria-pressed", String(!isBreak));
+  document.getElementById("modeShortBreak").setAttribute("aria-pressed", String(isBreak));
   document.getElementById("muteToggle").textContent = soundEnabled
     ? "🔊"
     : "🔇";

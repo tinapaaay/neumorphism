@@ -248,9 +248,9 @@ There are no borders anywhere. Edges come from shadows only. The one exception i
 
 ## Components
 
-**Dial.** The heart of the app. When idle it's raised, with a radial gradient lit from the top-left (#F4F8FB → #DDE6EE → #C8D5E1). While running it's pressed into `surface-pressed` with an inset shadow. Its accessible label reads out the action, the phase and the time left. The pressed state uses a springy ease, `cubic-bezier(0.34, 1.56, 0.64, 1)` at 220ms. That is the only bouncy motion in the app.
+**Dial.** The heart of the app. When idle it's raised, with a radial gradient lit from the top-left (#F4F8FB → #DDE6EE → #C8D5E1). While running it's pressed into `surface-pressed` with an inset shadow, and a 6px `primary` dot under the digits pulses slowly (2s; it stays still with reduced motion). Depth alone is too subtle to read from across a desk, so the dot is the at-a-glance running signal. It uses `primary` rather than `tertiary` because a status mark needs 3:1 against the pressed surface (4.3:1). Its accessible label reads out the action, the phase and the time left. The pressed state uses a springy ease, `cubic-bezier(0.34, 1.56, 0.64, 1)` at 220ms. That is the only bouncy motion in the app.
 
-**Pill buttons.** Duration, Reset, Mini and sound. Raised small, `label` type, `secondary` text. The active pill (the current duration) switches to `on-surface` text and stays raised. Pressing one gives an inset shadow. Pills must have hover, pressed and disabled styles. A disabled pill keeps its shape but drops its shadow and uses `secondary` text at 60% opacity. Hover only applies to enabled pills.
+**Pill buttons.** Mode ("Focus · 25m", "Short break · 5m"), Skip break, Reset, Mini and sound. Mode pills name the mode as well as the length, and use `aria-pressed` for the selected one. Raised small, `label` type, `secondary` text. The active pill (the current duration) switches to `on-surface` text and stays raised. Pressing one gives an inset shadow. Pills must have hover, pressed and disabled styles. A disabled pill keeps its shape but drops its shadow and uses `secondary` text at 60% opacity. Hover only applies to enabled pills.
 
 **Text buttons** (`profile-text-button`): Change photo, Use default avatar, Audio credits. Text in `primary` with no fill and no shadow. Hover underlines it (this is the only underline in the system), pressing it turns it `on-surface`, and when disabled it is `secondary` at 60%. Undo restore is a pill, not a text button.
 
@@ -261,6 +261,8 @@ There are no borders anywhere. Edges come from shadows only. The one exception i
 **Goal beads.** 26px round beads, unlit in `neutral` and lit in `tertiary`. When a session finishes, a lit orb flies from the dial into the next bead. The color of the beads alone tells you how much of the day's goal is done.
 
 **Dialogs.** `surface-raised`, `xl` radius, 24px padding, with tabs along the top. They use the native `<dialog>`, so Escape closes them and focus returns to the opening button.
+
+**Start hint.** The handwritten note ("Push to start" / "Push to pause") points at the dial from the right with a drawn arrow. On screens 640px wide or less, it moves into the strip at the top of the plate, above the socket, and drops the arrow. It is never hidden on phones, because it's the only instruction a first-time visitor gets.
 
 **Motion.** Use 150ms for hover, 220ms for presses and 300ms for layout moves, all `ease`, except the dial's spring. Reduced-motion settings remove the transforms, keep the color changes, and skip the bead orb animation.
 

@@ -27,7 +27,7 @@
     <!-- Tone.js for tactile acoustic pops and gentle bell alerts -->
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
 
-    <link rel="stylesheet" href="style.css?v=20261104-design-tokens" />
+    <link rel="stylesheet" href="style.css?v=20261104-critique-fixes" />
   </head>
   <body>
     <section id="tabGuard" class="tab-guard" aria-labelledby="tabGuardTitle">
@@ -538,13 +538,15 @@
               class="pill-btn active"
               id="modePomodoro"
               onclick="setMode('pomodoro')"
+              aria-pressed="true"
             >
-              25m
+              Focus · 25m
             </button>
             <button
               class="pill-btn"
               id="modeShortBreak"
               onclick="setMode(currentMode)"
+              aria-pressed="false"
               hidden
             >
               Short break · 5m

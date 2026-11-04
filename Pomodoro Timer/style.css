@@ -181,15 +181,26 @@ body {
   transform: translateY(1px);
 }
 
-/* Running status dot inside the dial */
+/* Running status dot inside the dial: the at-a-glance "running" cue. */
 .status-indicator {
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
-  background: var(--color-secondary);
-  margin-top: 4px;
+  background: var(--color-primary);
+  margin-top: var(--space-xs);
   opacity: 0;
   transition: opacity 0.3s ease;
+}
+.push-button-dial.is-pushed .status-indicator {
+  opacity: 1;
+  animation: dial-running-pulse 2s ease-in-out infinite;
+}
+@keyframes dial-running-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .push-button-dial.is-pushed .status-indicator { animation: none; }
 }
 
 /* Hand-Drawn Annotation */
@@ -1878,8 +1889,18 @@ body {
   .calendar-navigation button {
     min-height: 40px;
   }
+  /* Phones: the hint sits inside the plate, above the socket, without its arrow. */
   .annotation-box {
+    left: 50%;
+    top: var(--space-md);
+    bottom: auto;
+    transform: translateX(-50%);
+  }
+  .annotation-box svg {
     display: none;
+  }
+  .annotation-box .handwritten-text {
+    margin-left: 0;
   }
   .profile-card {
     display: grid;
