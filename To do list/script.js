@@ -310,9 +310,11 @@ function openTaskMenu(id, trigger) {
   taskMenu.querySelector('[data-action="down"]').disabled = peers.indexOf(task) === peers.length - 1;
   const rect = trigger.getBoundingClientRect();
   taskMenu.showPopover();
-  const height = taskMenu.getBoundingClientRect().height;
-  taskMenu.style.left = `${Math.max(8, Math.min(rect.right - 140, innerWidth - 148))}px`;
-  taskMenu.style.top = `${Math.max(8, Math.min(rect.bottom + 6, innerHeight - height - 8))}px`;
+  // On desktop the menu is zoomed, so screen pixels are divided by the zoom.
+  const zoom = parseFloat(getComputedStyle(taskMenu).zoom) || 1;
+  const { width, height } = taskMenu.getBoundingClientRect();
+  taskMenu.style.left = `${Math.max(8, Math.min(rect.right - width, innerWidth - width - 8)) / zoom}px`;
+  taskMenu.style.top = `${Math.max(8, Math.min(rect.bottom + 6, innerHeight - height - 8)) / zoom}px`;
   trigger.setAttribute('aria-expanded', 'true'); taskMenu.querySelector('button').focus();
 }
 taskMenu.addEventListener('toggle', () => { menuTrigger?.setAttribute('aria-expanded', String(taskMenu.matches(':popover-open'))); });
